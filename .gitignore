@@ -1,0 +1,5 @@
+.jekyll-cache/
+*.lock
+_site/
+_assets/yarn/
+**/.DS_Store
