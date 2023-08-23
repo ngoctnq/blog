@@ -47,7 +47,7 @@ Browsing through the guides and Google answers is like following a rabbit hole. 
 7. Type `w` to save your changes. You'll be asked to confirm this action. Do so.
 
 ### Boot Camp requires Windows 7
-Everything works... until you cannot install Boot Camp. Tried Windows 7 compatibility, no dice. It's kind of obvious that it's a problem with the downloaded Boot Camp, but there's no newest version provided on the [official website](https://support.apple.com/downloads/bootcamp) (6.0.6136 for my model, 6.1.x for newer models, and I really doubt Apple would update either the software nor the download site).
+Everything works... until you cannot install Boot Camp. Tried Windows 7 compatibility, no dice. It's kind of obvious that it's a problem with the downloaded Boot Camp, but there's no newest version provided on the [official website](https://support.apple.com/downloads/bootcamp) (6.0.6136 for my model, 6.1.x for newer models, and I really doubt Apple would update either the software or the download site).
 
 Turns out Brigadier is rather outdated and just will not pull the newest (or compatible?) version. The solution is much simpler than the previous one, yet a lot more restrictive: [just go into the Boot Camp Assistant to download the updated software](https://discussions.apple.com/thread/7189652). I wasn't able to successfully run all of the packaged executables, but most is actually good enough. Might be relevant, but I actually ran some of the outdated software from Brigadier before I found the official one, so that might have helped.
 

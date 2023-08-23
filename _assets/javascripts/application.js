@@ -12,7 +12,7 @@ $(document).ready(function() {
   ).listen('.zooming');
 
   // Share buttons
-  $('.article-share a').on('click', function() {
+  $('.article-share a.share').on('click', function() {
     window.open($(this).attr('href'), 'Share', 'width=200,height=200,noopener');
     return false;
   });

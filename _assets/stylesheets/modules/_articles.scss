@@ -203,6 +203,13 @@
       fill: $gray-dark;
     }
   }
+  .disabled {
+    pointer-events: none;
+    cursor: default;
+    svg {
+      fill: $gray-lightest;
+    }
+  }
 }
 
 // Responsive
