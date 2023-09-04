@@ -17,7 +17,7 @@
             {{ content }}
           </div>
           <div class="article-share">
-            <a {% if page.previous.url == undefined %}class="disabled"{% endif %} href="{{page.previous.url}}" title="{{page.previous.title}}">
+            <a {% if page.next.url == undefined %}class="disabled"{% endif %} href="{{page.next.url}}" title="{{page.next.title}}">
               <svg viewBox="-100 -100 712 712"><path d="M198,256L391.6,62.4c14.3-14.3,14.3-37.4,0-51.7c-14.3-14.3-37.5-14.3-51.7,0L120.4,230.1c-6.8,6.8-10.7,16.2-10.7,25.9c0,9.6,3.9,19.1,10.7,25.9l219.4,219.4c14.3,14.3,37.4,14.3,51.7,0c14.3-14.3,14.3-37.4,0-51.7L198,256z"/></svg>
             </a>
 
@@ -30,7 +30,7 @@
               <svg viewBox="0 0 512 512"><path d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z"/></svg>
             </a>
 
-            <a {% if page.next.url == undefined %}class="disabled"{% endif %} href="{{page.next.url}}" title="{{page.next.title}}">
+            <a {% if page.previous.url == undefined %}class="disabled"{% endif %} href="{{page.previous.url}}" title="{{page.previous.title}}">
               <svg viewBox="-100 -100 712 712"><path d="M391.5,230.1L172.1,10.7c-14.3-14.3-37.4-14.3-51.7,0c-14.3,14.3-14.3,37.4,0,51.7L314,256L120.4,449.6c-14.3,14.3-14.3,37.4,0,51.7c14.3,14.3,37.4,14.3,51.7,0l219.4-219.4c6.8-6.8,10.7-16.2,10.7-25.9C402.2,246.4,398.3,236.9,391.5,230.1z"/></svg>
             </a>
           </div>
