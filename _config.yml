@@ -77,6 +77,7 @@ exclude:
   - vendor/
   - yarn.lock
   - templates/
+  - archived/
 plugins:
   - jekyll-assets
   - jekyll-paginate
