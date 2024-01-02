@@ -113,9 +113,16 @@
         </a>
       </li>
     {% endif %}
+    {% if site.social.spotify_artist %}
+      <li>
+        <a href="https://open.spotify.com/artist/{{ site.social.spotify_artist }}" rel="noreferrer noopener" target="_blank" title="Hey, you found me!">
+          {% include svg-icon.html icon="spotify" %}
+        </a>
+      </li>
+    {% endif %}
     {% if site.social.youtube %}
       <li>
-        <a href="https://www.youtube.com/user/{{ site.social.youtube }}" rel="noreferrer noopener" target="_blank" title="Youtube">
+        <a href="https://www.youtube.com/user/{{ site.social.youtube }}" rel="noreferrer noopener" target="_blank" title="YouTube">
           {% include svg-icon.html icon="youtube" %}
         </a>
       </li>
