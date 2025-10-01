@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>ngoc's blog | [WIP] How [not] to run a Monte Carlo simulation.</title>
+  <meta name="description" content="Wow I suck at probabilities.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="[WIP] How [not] to run a Monte Carlo simulation.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://blog.ngoc.io/posts/monte-carlo">
+  <meta property="og:description" content="Wow I suck at probabilities.">
+  <meta property="og:site_name" content="ngoc's blog">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://blog.ngoc.io/posts/monte-carlo">
+  <meta name="twitter:title" content="[WIP] How [not] to run a Monte Carlo simulation.">
+  <meta name="twitter:description" content="Wow I suck at probabilities.">
+
+  
+    <meta property="og:image" content="https://blog.ngoc.io/assets/og-image-2cdb6eff3b793c005b266304d75b24ec83fb83e5ce1133587094c80747cf55af.jpg">
+    <meta name="twitter:image" content="https://blog.ngoc.io/assets/og-image-2cdb6eff3b793c005b266304d75b24ec83fb83e5ce1133587094c80747cf55af.jpg">
+  
+
+  <link href="https://blog.ngoc.io/feed.xml" type="application/rss+xml" rel="alternate" title="ngoc's blog Last 10 blog posts" />
+
+  
+
+  <link rel="icon" type="image/x-icon" href="/assets/favicon-93edcce13a6832b025e9c9d3bf1abf4165d2daf5e75c370df0640605ecf2f6d0.ico">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon-798ee945c613a24d11ee774bda3c6b04b9cf62ea37369cee8f4c21ed35d45210.png">
+  
+  
+
+    
+      <link rel="stylesheet" type="text/css" href="/assets/light-59e65518d02f6eabc32e01c3f98448f8b25b3de0d609ec2bef834610a89078bd.css">
+    
+
+  
+
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+</head>
+
+<body>
+  <main>
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav scrollappear">
+  <a href="/" class="header-logo" title="ngoc's blog">ngoc's blog</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="https://ngoc.io" title="About me">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-about">
+  <use href="/assets/about-ecf154b571ab8034ae00aeed91a3b7ad68db80b46d958753ad6216c919486e88.svg#icon-about" xlink:href="/assets/about-ecf154b571ab8034ae00aeed91a3b7ad68db80b46d958753ad6216c919486e88.svg#icon-about"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://github.com/ngoctnq" rel="noreferrer noopener" target="_blank" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-github">
+  <use href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github" xlink:href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://www.linkedin.com/in/ngoctnq" rel="noreferrer noopener" target="_blank" title="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-linkedin">
+  <use href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin" xlink:href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://open.spotify.com/artist/6A05EzEpk5wjEDwC9sTMO4" rel="noreferrer noopener" target="_blank" title="Hey, you found me!">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-spotify">
+  <use href="/assets/spotify-e5b8d68b83f4ca44a4a6dfbe2240ea050cb4d2fd38c1628be02cf2f61abe19f6.svg#icon-spotify" xlink:href="/assets/spotify-e5b8d68b83f4ca44a4a6dfbe2240ea050cb4d2fd38c1628be02cf2f61abe19f6.svg#icon-spotify"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:hi@ngoc.io" title="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-email">
+  <use href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email" xlink:href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-rss">
+  <use href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss" xlink:href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+  </ul>
+</nav>
+
+
+
+        <article class="article scrollappear">
+          <header class="article-header">
+            <h1>[WIP] How [not] to run a Monte Carlo simulation.</h1>
+            <p>Wow I suck at probabilities.</p>
+            <div class="article-list-footer">
+  <span class="article-list-date">
+    September 26, 2025
+  </span>
+  <span class="article-list-divider">-</span>
+  <span class="article-list-minutes">
+    
+    
+      6 minute read
+    
+  </span>
+  <span class="article-list-divider">-</span>
+  <div class="article-list-tags">
+    
+      
+      <a href="/tag/math" title="See all posts with tag 'Math'">Math</a>
+    
+  </div>
+</div>
+          </header>
+
+          <div class="article-content">
+            <p>As usual, I was procrastinating my real research work by doing something irrelevant; this time it’s equity calculator for a poker hand, assuming no betting actions are taken at any points after that. The plan has always been simple: sample hands, sample community cards, evaluate win/loss, and take the average. The execution though…</p>
+
+<h2 id="the-problem">The problem</h2>
+
+<p>Just to simplify, we are only concerning with the win/loss/tie probability. So, in a \(n\)-player game, given that you have seen your hole card and nothing else, what is the probability that you will win when the dust settles?</p>
+
+<p>From this point on, assume that we have a function that evaluates the win/loss/tie probability given a set of hands, that bruteforce through all possible combinations of community cards. It takes 30 seconds for one such run on my dated MacBook Air with single core and no PyPy, so it’s fast enough™️ in tandem with parallelization. Now, the Monte Carlo estimation is being averaged across sampled possible starting hands.</p>
+
+<h2 id="the-surefire-way">The surefire way</h2>
+<p>Intuitively, just sample all other hands, run the simulation, and average outcomes. Simple, right?</p>
+
+<p>Well, yeah. To put it rigorously, let \( \mathcal{H}=\{H_0,\dots, H_{n-1}\} \) be the starting hands, and \(H_i\) are the hole cards of the \(i\)-th player. Let \(H\) (with no suffix) be any particular hand we’re trying to evaluate, and \(Y_0\) is a Boolean variable showing whether the first player won — excuse my 0-indexing. Then we have:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align*}
+\mathbb{P}[Y_0\,\vert\, H_0=H]
+&= \sum_\mathcal{H}\mathbb{P}[Y_0,\mathcal{H}\,\vert\, H_0=H] \\
+&= \sum_\mathcal{H}\mathbb{P}[Y_0\,\vert\,\mathcal{H},H_0=H]\times\mathbb{P}[\mathcal{H}\,\vert\,H_0=H] \\
+&= \mathbb{E}_{\mathcal{H}\,\vert\,H_0=H}\mathbb{P}[Y_0\,\vert\,\mathcal{H},H_0=H].
+\end{align*} %]]></script>
+
+<p>This is just mathspeak for “sample hole cards such that the first hand is what we want, then count many times the first hand won.” Also functionally equivalent to “only sample the other players’ hands,” i.e. just \(\{H_1,\dots, H_{n-1}\}\).</p>
+
+<h2 id="the-shortcut">The shortcut</h2>
+<p>With that approach, we have to do the whole song and dance above for each hand independently. Imagine we can accumulate counts for other hands in the above simulation! So here is what I did in pseudocode:</p>
+
+<ol>
+  <li>Sample the whole set of hole cards \( \mathcal{H}=\{H_0,\dots, H_{n-1}\} \)</li>
+  <li>Get all results from the game simulation \( \mathbf{Y}=\{Y_0,\dots, Y_{n-1}\} \)</li>
+  <li>For each hand, update the win/loss/tie statistics.</li>
+</ol>
+
+<p>This would still work nicely, because everything is unique. Any hand in \(\mathcal{H}\) can be treated as index 0, and the sampling process for \(\mathcal{H}\) can be viewed as a 2-step process where one samples \(H_0\) first before the rest. If we condition the second step on the first, that is equivalent to doing one simulation for a (randomly) instantiated \(H_0\). As a result, this new approach is simply equivalent to running simulations for all hands, just in an intertwined order. I handwavied a little glossing over how the priors for all hands are identical, and how the hand positions are permutation-invariant, but those minor details don’t affect the analysis — as per mathematician’s tradition, the rest is left as an exercise to the reader.
+<!-- Note that while \\(H_0\\) is randomly determined, the variable is already instantiated when we condition . --></p>
+
+<h2 id="the-canonical-representation">The canonical representation</h2>
+<p>But when things stop being unique is when all the troubles started. See, what we want is not the actual hand — that is just for fancy analyses and real-time TV annotations. What we really want is <em>canonical forms</em>, that is, instead of <code class="highlighter-rouge">AdKd</code> (Ace-King of Diamond), we work with <code class="highlighter-rouge">AKs</code> (Ace-King suited), which actually is a <em>set</em> of possible hands (<code class="highlighter-rouge">AcKc</code>, <code class="highlighter-rouge">AdKd</code>, <code class="highlighter-rouge">AhKh</code>, <code class="highlighter-rouge">AsKs</code>). This canonical form lets us work with only 169 possibilities, instead of the \(52C2=1326\) that only someone like Sheldon Cooper can remember.</p>
+
+<p>Now, what I should have done is that I should have gone for the approach above storing all full hands, then aggregate them later for the canonical version. This is perfectly fine because, let \( \mathcal{C}=\{C_0,\dots, C_{m-1}\} \) be a canonical hand and \( C_i \) be the actual hands that satisfy that canonical representation, we have:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align*}
+\mathbb{P}[Y_0\,\vert\, H_0\in\mathcal{C}]
+&= \mathbb{P}[H_0\in\mathcal{C}\,\vert\, Y_0]\times \mathbb{P}[Y_0] / \mathbb{P}[H_0\in\mathcal{C}] \\
+&= \sum_{i=0}^{m-1}\mathbb{P}[H_0=C_i\,\vert\, Y_0]\times \mathbb{P}[Y_0] \;{\Large /}\; \sum_{i=0}^{m-1}\mathbb{P}[H_0=C_i] & \text{(}C_i\text{ are uniques }\textit{as a pair}\text{)} \\
+&= \sum_{i=0}^{m-1}\mathbb{P}[H_0=C_i\,\vert\, Y_0] \;{\Large /}\; \sum_{i=0}^{m-1}\mathbb{P}[H_0=C_i] \times \mathbb{P}[Y_0]\\
+&= \frac1m\sum_{i=0}^{m-1}\frac{\mathbb{P}[H_0=C_i\,\vert\, Y_0]}{\mathbb{P}[H_0=C_i]} \times \mathbb{P}[Y_0] & \text{(}C_i\text{ are equally probable)}\\
+&=\frac1m\sum_{i=0}^{m-1}\mathbb{P}[Y_0\,\vert\, H_0=C_i].
+\end{align*} %]]></script>
+
+<p>While the math seems so trivial, I had to write it down or else <em>I</em> would have been confused. And also because I tried to take <em>another</em> shortcut and was confused why it didn’t give me a good estimate.</p>
+
+<h2 id="only-canonical-representations"><strong>Only</strong> canonical representations</h2>
+<p>This is actually my first implementation, and the reason why I started writing this article:</p>
+
+<ol>
+  <li>Sample the whole set of hole cards \( \mathcal{H}=\{H_0,\dots, H_{n-1}\} \)</li>
+  <li>Get all results from the game simulation \( \mathbf{Y}=\{Y_0,\dots, Y_{n-1}\} \)</li>
+  <li>For each hand, get its canonical representation, then update the statistics.</li>
+</ol>
+
+<p>It made sense, right? This is (roughly) equivalent to just taking the average of the statistics corresponding to all hands of one canonical representation. But but, you may ask, (and <em>you</em> here is me asking myself if it isn’t clear enough already that I may have schizophrenia),</p>
+
+<blockquote>
+  <p>You can’t lump the counts of different hands altogether! The number of <code class="highlighter-rouge">AsKh</code> is not equal to which of <code class="highlighter-rouge">AdKc</code>, so you have to keep the statistics separated, take their means, and <em>then</em> average the means!</p>
+</blockquote>
+
+<p>When the number of samples goes to infinity, the numbers of available samples for each individual hand will be more equal as they have identical priors. Also,</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align*}
+\mathbb{P}[Y_0\,\vert\, H_0\in\mathcal{C}]
+&=\mathbb{E}_{H\sim\mathcal{C}}\mathbb{P}[Y_0\,\vert\, H_0=H]\\
+&=\mathbb{E}_{H\sim\mathcal{C}}\mathbb{E}_{\mathcal{H}\,\vert\,H_0=H}\mathbb{P}[Y_0\,\vert\,\mathcal{H},H_0=H]\\
+&=\mathbb{E}_{H\sim\mathcal{C}}\mathbb{E}_{\bar{\mathcal{H}}}\mathbb{P}[Y_0\,\vert\,H,\bar{\mathcal{H}}]\\
+&=\mathbb{E}_{H\sim\mathcal{C},\bar{\mathcal{H}}}\mathbb{P}[Y_0\,\vert\,H,\bar{\mathcal{H}}],
+\end{align*} %]]></script>
+
+<p>where \(\bar{\mathcal{H}} = \mathcal{H}\setminus\{H_0\}\). The double expectation here means that we can sample the first canonical hand, then sample the rest of the table; and we then can lump the double sampling together during aggregated averaging at the end.</p>
+
+<blockquote>
+  <p>But the player has to always be at seat 0 across all simulations!</p>
+</blockquote>
+
+<p>Nope.</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align*}
+\mathbb{P}[Y_0\,\vert\, H_0\in\mathcal{C}]
+&=\mathbb{E}_{H\sim\mathcal{C}}\mathbb{P}[Y_0\,\vert\, H_0=H]\\
+&=\mathbb{E}_{H_i\sim\mathcal{H}}\mathbb{E}_{H\sim\mathcal{C}}\mathbb{P}[Y_0\,\vert\, H_i=H].
+\end{align*} %]]></script>
+
+<p>However, there’s something tricky here. This formulation is only correct if you randomly sample the player seat every time. If I accumulate statistics across all players of every simulation, eventually I’ll run into the case when more than one in that game have the same hole cards, e.g. both have <code class="highlighter-rouge">AKo</code>. In that case, the independence condition isn’t upheld anymore, and all hell breaks loose.</p>
+
+<p>Let’s first start writing the math for the proposed algorithm above:</p>
+
+<script type="math/tex; mode=display">\begin{align*}
+\frac{\mathbb{E}_{\mathcal{H}}\mathbb{E}_{H_i}\mathbb{P}[Y_i|\mathcal{H},H_i\in\mathcal{C}]}
+{\mathbb{E}_{\mathcal{H}}\mathbb{E}_{H_i}\mathbb{P}[H_i\in\mathcal{C}|\mathcal{H}]}
+\end{align*}.</script>
+
+<p>Note that the expectation can be equivalently exchanged with summation, or averaging — the normalizing constants are all identical between the numerator and denominator. This differs from our original formulation only at the expectation over players, whereas the original fixed the player at index 0:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align*}
+\frac{\mathbb{E}_{\mathcal{H}}\mathbb{P}[Y_0|\mathcal{H},H_0\in\mathcal{C}]}
+{\mathbb{E}_{\mathcal{H}}\mathbb{P}[H_0\in\mathcal{C}|\mathcal{H}]}
+&=\frac{\mathbb{E}_{\mathcal{H}}\mathbb{P}[Y_0,\mathcal{H}|H_0\in\mathcal{C}]/\mathbb{P}[\mathcal{H}|H_0\in\mathcal{C}]}
+{\mathbb{E}_{\mathcal{H}}\mathbb{P}[\mathcal{H}|H_0\in\mathcal{C}]\times\mathbb{P}[\mathcal{H}]/\mathbb{P}[H_0\in\mathcal{C}]}
+\end{align*}. %]]></script>
+
+<!-- $$
+\begin{align*}
+\sum_{\mathcal{H}}\frac{\sum_{H_i}\mathbb{P}[Y_i|\mathcal{H}]\mathbb{P}[H_i\in\mathcal{C}|\mathcal{H}]}{\sum_{H_i}\mathbb{P}[H_i\in\mathcal{C}|\mathcal{H}]}
+&=\sum_{\mathcal{H}}\frac{\sum_{H_i}\mathbb{P}[Y_i|\mathcal{H}]\mathbb{P}[\mathcal{H}|H_i\in\mathcal{C}]}{\sum_{H_i}\mathbb{P}[\mathcal{H}|H_i\in\mathcal{C}]} & (1) \\
+&=\sum_{\mathcal{H}}\frac{\sum_{H_i}\mathbb{P}[Y_i|\mathcal{H}]\mathbb{P}[\mathcal{H}|H_i\in\mathcal{C}]}{|\mathcal{H}|\times\mathbb{P}[\mathcal{H}|H_i\in\mathcal{C}]} & (H_i\text{ are equivalent})
+\end{align*}$$ -->
+
+<!-- where \\((1)\\) happens when we multiply both the numerator and denominator with \\(\mathbb{P}[\mathcal{H}]/\mathbb{P}[H_i\in\mathcal{C}]\\), and \\(\mathbb{P}[H_i\in\mathcal{C}]\\) is identical for any hand \\(H_i\\). -->
+
+<h2 id="the-result">The result</h2>
+
+<p>TBD</p>
+
+<h2 id="appendix-how-to-calculate-equity">Appendix: How to calculate Equity</h2>
+<p>To my understanding, Equity is almost like EV, where it measures the portion of the pot that belongs to you given your hand, depending on how the game turn out (i.e. what cards are drawn). This is obviously proportional to the pot, so taking it outside as a common factor we have:</p>
+
+<script type="math/tex; mode=display">\text{Equity} = \text{pot} \times \left(\mathbb{P}[\text{win}] + \sum_{k=2}^\text{player count}\mathbb{P}[k\text{-way tie}]/k\right).</script>
+
+<p>We can now just take the value within those big parentheses as the output. The difference between Equity and EV is that the former assumes nothing else changes, and the latter measures in an actual monetary quantity, e.g. dollars or big blinds.</p>
+
+<p>The one thing I did not know before turned out to be the simplest, and the things I thought I knew threw me in for a giant loop. Amazing.</p>
+
+          </div>
+          <div class="article-share">
+            <a class="disabled" href="" title="">
+              <svg viewBox="-100 -100 712 712"><path d="M198,256L391.6,62.4c14.3-14.3,14.3-37.4,0-51.7c-14.3-14.3-37.5-14.3-51.7,0L120.4,230.1c-6.8,6.8-10.7,16.2-10.7,25.9c0,9.6,3.9,19.1,10.7,25.9l219.4,219.4c14.3,14.3,37.4,14.3,51.7,0c14.3-14.3,14.3-37.4,0-51.7L198,256z"/></svg>
+            </a>
+
+            
+            
+            <a class="share" href="https://twitter.com/intent/tweet?text=[WIP]+How+[not]+to+run+a+Monte+Carlo+simulation.%20-%20https://blog.ngoc.io/posts/monte-carlo" title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z"/></svg>
+            </a>
+            <a class="share" href="https://www.facebook.com/sharer/sharer.php?u=https://blog.ngoc.io/posts/monte-carlo" title="Share on Facebook" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z"/></svg>
+            </a>
+
+            <a  href="/posts/oclp-bootcamp" title="Problems and Solutions for installing Windows with OpenCore Legacy Patcher">
+              <svg viewBox="-100 -100 712 712"><path d="M391.5,230.1L172.1,10.7c-14.3-14.3-37.4-14.3-51.7,0c-14.3,14.3-14.3,37.4,0,51.7L314,256L120.4,449.6c-14.3,14.3-14.3,37.4,0,51.7c14.3,14.3,37.4,14.3,51.7,0l219.4-219.4c6.8-6.8,10.7-16.2,10.7-25.9C402.2,246.4,398.3,236.9,391.5,230.1z"/></svg>
+            </a>
+          </div>
+
+          <!--  -->
+            
+          <div class="article-comments"></div>
+          <script src="https://giscus.app/client.js"
+            data-repo="ngoctnq/blog"
+            data-repo-id="R_kgDOKJ4d2g"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOKJ4d2s4CYyNy"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-theme="noborder_light"
+            data-input-position="top"
+            data-lang="en"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async>
+          </script>
+          <noscript>Please enable JavaScript to view the comments.</noscript>
+
+        </article>
+        <footer class="footer scrollappear">
+  <p>
+    just. keep. swimming.
+  </p>
+</footer>
+      </div>
+    </div>
+  </main>
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NG7N647RWK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NG7N647RWK');
+  </script>
+
+
+<script src="/assets/vendor-3ee2c63bbac916f96cd7f90e83ab767f058ead1301444c9966f5156911c8be7f.js" type="text/javascript"></script>
+
+
+  <script src="/assets/webfonts-96493456d319d1bf419afdf8701552d4d486fee6afd304897d4fd81eb4e0cc0b.js" type="text/javascript"></script>
+
+
+
+  <script src="/assets/scrollappear-e2da8ea567e418637e31266cc5302126eaa79f62a2273739086358b589a89ee6.js" type="text/javascript"></script>
+
+
+<script src="/assets/application-e583c14ca11e95e79eee79fe68a7ba5f766b85e70bb478cb16bf929ebab16545.js" type="text/javascript"></script>
+
+
+</body>
+</html>
