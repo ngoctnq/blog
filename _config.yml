@@ -44,6 +44,10 @@ social:
 
 # Important settings (change at own risk)
 
+# Kramdown settings for math
+kramdown:
+  math_engine: null
+
 assets:
   plugins:
     css: { autoprefixer: {}}
