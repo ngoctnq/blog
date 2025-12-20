@@ -10,7 +10,11 @@ _This is part 2 of the pokerqt series, where I do poker-related things because I
 {: style="margin-bottom: 0.5em !important; font-size: .9em" }
 1. [How [not] to run a Monte Carlo simulation]({% post_url 2025-12-19-monte-carlo %})
 2. _Control Variates and the Satisfying Telescoping Sum_
+{% if draft %}
 3. [Stacking chips and CUDA cores]({% post_url 2026-01-01-stacking-chips %})
+{% else %}
+_And 1 more in the works!_
+{% endif %}
 {: style="font-size: .95em; opacity: 0.9" }
 
 ---
