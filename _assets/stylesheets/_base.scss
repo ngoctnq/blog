@@ -149,6 +149,33 @@ img {
   margin: 0;
 }
 
+// Tables
+// =============================================================================
+
+table {
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: collapse;
+  
+  thead {
+    border-bottom: 2px solid $base-border-color;
+  }
+  
+  td {
+    padding: 10px 15px;
+  }
+  
+  tbody tr {
+    &:nth-child(even) {
+      background-color: rgba($gray-lightest, 0.2);
+    }
+    
+    &:hover {
+      background-color: rgba($base-accent-color, 0.05);
+    }
+  }
+}
+
 .notfound-wrapper {
   margin-top: 100px;
   margin-bottom: 100px;

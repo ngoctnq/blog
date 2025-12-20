@@ -1,10 +1,20 @@
 ---
 layout: post
-title: "[WIP] How [not] to run a Monte Carlo simulation."
-description: "Wow I suck at probabilities."
+title: "How [not] to run a Monte Carlo simulation"
+description: "Greed is good."
 thumb_image: 
 tags: [math]
 ---
+
+_This is part 1 of the pokerqt series, where I do poker-related things because I like a girl who do._
+{: style="margin-bottom: 0.5em !important; font-size: .9em" }
+1. _How [not] to run a Monte Carlo simulation_
+2. [Control Variates and the Satisfying Telescoping Sum]({% post_url 2025-12-25-control-variate %})
+3. [Stacking chips and CUDA cores]({% post_url 2026-01-01-stacking-chips %})
+{: style="font-size: .95em; opacity: 0.9" }
+
+---
+{: style="margin-bottom: 2em !important" }
 
 <!-- Original started date: 2025/09/26. -->
 
@@ -14,7 +24,7 @@ As usual, I was procrastinating my real research work by doing something irrelev
 
 Just to simplify, we are only concerning with the win/loss/tie probability. So, in a $n$-player game, given that you have seen your hole card and nothing else, what is the probability that you will win when the dust settles?
 
-From this point on, assume that we have a function that evaluates the win/loss/tie probability given a set of hands, that bruteforce through all possible combinations of community cards. It takes 30 seconds for one such run on my dated MacBook Air with single core and no PyPy, so it's fast enough™️ in tandem with parallelization. Now, the Monte Carlo estimation is being averaged across sampled possible starting hands.
+From this point on, assume that we have a function that evaluates the win/loss/tie probability given a set of hands, that bruteforce through all possible combinations of community cards. It takes 30 seconds for one such run on my dated MacBook Air with single core and no PyPy, so it's fast enough™️ in tandem with parallelization. Now, the Monte Carlo (MC) estimation is being averaged across sampled possible starting hands.
 
 ## The surefire way
 Intuitively, just sample all other hands, run the simulation, and average outcomes. Simple, right?
@@ -96,7 +106,7 @@ Effectively, our above algorithm is interleaving the sampling processes for diff
 So all is still fine and dandy here, until I decided to try to take _another_ shortcut.
  <!-- and was confused why it didn’t give me the correct answer. -->
 
-## Reusing results
+## I'll take everything
 Note that the position of the player in question does not need to be fixed:
 
 $$
@@ -109,13 +119,16 @@ This means that we can pick any seat of the table to record these statistics; in
 
 Calm down, the process still select a hand index before the realization of the hand. The acceptance criteria $A$ just needs to be independent of the random variable being estimated, in this case, $A \, \mathrel{\perp\mspace{-10mu}\perp} \, Y_0 \mid H_0\in\mathcal{C}$. Note the conditional $H_0\in\mathcal{C}$: because we are estimating $Y_0$ only conditionally, the acceptance criteria can also rely on that condition without influencing the results of sampling $Y_0$.
 
-So anyway, greed is good, I present to you my "optimized" implementation:
+So anyway, greed is good, I present to you my _optimized_ implementation:
 
 1. Sample the whole set of hole cards \\( \mathcal{H}=\\\{H_0,\dots, H_{n-1}\\\} \\)
 2. Get all results from the game simulation \\( \mathbf{Y}=\\\{Y_0,\dots, Y_{n-1}\\\} \\)
 3. For _each_ hand, get its canonical representation, then update the statistics.
 
-Now if I accumulate statistics across all players of every simulation, eventually I’ll run into the case when more than one player in that game have the same canonical representation, e.g. both have `AKo`. In that case, the two accumulated "samples" are actually dependent of each other, and all intuitive senses go out the window. It's probably obvious that Monte Carlo estimator requires its samples to be independent to guarantee variance bounds, thanks to the Law of Large Numbers, but that's not _too_ important for correctness. The bigger question is, does this sample dependency affect the consistency of the estimator? Or more simply, is this estimator unbiased?
+<!-- Now if I accumulate statistics across all players of every simulation, eventually I’ll run into the case when more than one player in that game have the same canonical representation, e.g. both have `AKo`. In that case, the two accumulated "samples" are actually dependent of each other, and all intuitive senses go out the window.  -->
+> When you deal a game where more than one player in it have the same canonical representation, e.g. both have `AKo`, the two accumulated "samples" are actually dependent of each other!
+
+Well, this is where it tripped me, and prompted me to write this post. The results that came out looked so different from the closed-form solver that I wrote. It's probably obvious that Monte Carlo estimator requires its samples to be independent to guarantee variance bounds, thanks to the Law of Large Numbers, but that's not _too_ important for correctness. The bigger question is, does this sample dependency affect the consistency of the estimator? Or more simply, is this estimator unbiased?
 <!-- I guess it's obvious by now where my downfall starts. If I accumulate statistics across all players of every simulation, eventually I’ll run into the case when more than one player in that game have the same canonical representation, e.g. both have `AKo`. In that case, the two accumulated "samples" are actually dependent of each other, and all hell breaks loose. It's easy to see that Monte Carlo estimator requires its samples to be independent to guarantee variance bounds, thanks to the Law of Large Numbers, but that's not the dangerous part. The real deadly pitfall is, I now am not sampling from the right distribution anymore. This distribution will be biased towards canonical hands with larger size $|\mathcal{C}|$, because their hands appear _together_ more often; specifically, I'm double-counting those plays. And it gets worse as the number of players increases. -->
 
 To answer this question, let us write out the complete math:
@@ -140,29 +153,59 @@ p(\mathcal{C})
 \end{align*}
 $$
 
-Apparently it is.
+Apparently the estimator is consistent, and the problem was just variance. Honestly, that's a lot of math for just "keep a tracker for each player, then aggregate them all in one pool." If we track every player, we are determining the seat before the result; and because of permutation equivalence, the distributions of each player's results within the shared counter will converge into the same one as the sample size goes to infinity. Now we only have one last remaining issue left.
 
 ## Variance reduction
 
 Alright, so now I have a consistent estimator that still feels weird in my head, but the math guarantees that it really is unbiased, and the only issue left is with regards to variance. How do we fit this last piece of the puzzle?
 
-Well, fun fact: the above algorithm is asymptotically equivalent to if we take the mean of the results of all the pairs that belong to the same canonical hand before aggregation.
-<!-- As usual, the proof is left as an exercise to the reader, but -->
-The main idea still revolves around the self-normalizing property of these estimators, and for the sake of rigor:
+Well, unfortunately I'll have to admit that I can't tell you much about it. There are techniques such as stratified sampling (and/or reweighting) over both hole cards and community cards, or some complicated antithetic conditioning/special sampling process. My end goal is to move this estimator to a GPU for a massively-parallelized computation, so I wasn't too interested in these approaches. But what I _was_ interested in is this naive approach I had that I now aptly named it as:
+
+### How **not** to run a Monte Carlo simulation
+
+In a haze because I was writing this at 5am, I was tempted to try to reduce variance for these problematic games, by just taking the mean of the results of all the pairs that belong to the same canonical hand before aggregation. Well, the equivalence is simply not true:
 
 $$
-\begin{align*}
 \tilde{p}(\mathcal{C})
-&= \mathbb{E}_\mathcal{H}\left[\frac{\sum_i\mathbb{1}[H_i\in\mathcal{C}]\mathbb{P}[Y_i|\mathcal{H}]}{\sum_i\mathbb{1}[H_i\in\mathcal{C}]}\right] \\
-\end{align*}
+= \mathbb{E}_\mathcal{H}\left[\frac{\sum_i\mathbb{1}[H_i\in\mathcal{C}]\mathbb{P}[Y_i|\mathcal{H}]}{\sum_i\mathbb{1}[H_i\in\mathcal{C}]}\right]
+\neq \frac{\mathbb{E}_\mathcal{H}[\sum_i\mathbb{1}[H_i\in\mathcal{C}]\mathbb{P}[Y_i|\mathcal{H}]]}{\mathbb{E}_\mathcal{H}[\sum_i\mathbb{1}[H_i\in\mathcal{C}]]}
+=p(\mathcal{C})
 $$
 
-- Why does variance go down?
-- Can we upsample/stratified?
+This is because the numerator and the denominator is heavily correlated &mdash; obviously, the probability that you win is dependent on the canonical hand that you have, which the whole point of constructing this estimator.
 
-## The final algorithm
+Perhaps it's best to illustrate this with a toy example. In this game, the card deck has 1A, 1B, 2A, 2B, 3A, 3B. 2 people each draw one card. If they have a higher number, they win. If not, draw the third card. If it's odd, the one with A win, otherwise if even. Perfectly balanced, as all things should be.
 
-TBD
+Let's assume you already hold a 3: the probability of that happening is $1/3$. In that case, the probability the other one holds another 3 is $1/5$, in which case there's a 50/50 chance you win.
+The winning probability should be $4/5 + 1/5 \times 1/2 = 0.9$.
+
+Now let's list out all the possible game states that there exists a 3:
+
+| Player 1 | Player 2 |     Count     | $P[Y_1]$ | $P[Y_2]$ |
+|:--------:|:--------:|:-------------:|:--------:|:--------:|
+|     3    |    !3    | $2\times 4=8$ |     1    |     0    |
+|    !3    |    3     | $4\times 2=8$ |     0    |     1    |
+|    3A    |    3B    | $1$           |    0.5   |    0.5   |
+|    3B    |    3A    | $1$           |    0.5   |    0.5   |
+
+If we use the original algorithm, we would get
+
+$$
+(8 + 8 + 0.5 \times 4) / (8 + 8 + 1 \times 4) = 18 / 20 = 0.9
+$$
+
+If we use the mean-then-aggregate version, we instead get
+
+$$
+(8 + 8 + 0.5 \times 2) / (8 + 8 + 1 \times 2) = 17 / 18 = 0.9\bar{4}
+$$
+
+We can see that in this example, the proposed algorithm is actually biased against games with the same card number! In short, just don't use it.
+
+### Honorable mention: (Multi-level) Control Variates
+Out of all the mentioned approaches that I glossed over above, there is a method that helps with high variance that is both very simple, and incur minimal overhead! That is, Control Variates.
+
+[But that is for another day.]({% post_url 2025-12-25-control-variate %})
 
 ## Appendix: How to calculate Equity
 To my understanding, Equity is almost like EV, where it measures the portion of the pot that belongs to you given your hand, depending on how the game turn out (i.e. what cards are drawn). This is obviously proportional to the pot, so taking it outside as a common factor we have:
@@ -171,10 +214,14 @@ $$
 \text{Equity} = \text{pot} \times \left(\mathbb{P}[\text{win}] + \sum_{k=2}^\text{player count}\mathbb{P}[k\text{-way tie}]/k\right).
 $$
 
-The summation may look scary, but in reality, there's only one probably term in that big parentheses that is nonzero for each simulation &mdash; you can't both win and be in a $k$-way tie in one game. The proper way to do this is to create a counter for each $k$-way tie count, then the linearity of expectation trivially guarantees the correctness of the algorithm. We can take it one step further and combine the total tie equity across all values of $k$ into one total tracker by weighting the binary outcome of each tie with $1/k$ before adding it to the sum, and linearity would still apply; but honestly just keep the individual counts for flexibility during post-simulation statistics aggregation.
+The summation may look scary, but in reality, there's only one probably term in that big parentheses that is nonzero for each simulation &mdash; you can't both win and be in any $k$-way tie in one game. The proper way to do this is to create a counter for each $k$-way tie count, then the linearity of expectation trivially guarantees the correctness of the algorithm.
+
+> Can we take it one step further and combine the total tie equity accumulators across all values of $k$ into one by weighting the binary outcome of each tie with $1/k$ before adding it to the sum, and linearity would still apply?
+
+One last downfall for the road: similar to the mean-then-aggregate approach above, this would yield an incorrect estimate. Most simply, the probability of having a 2-way tie and a 9-way tie is different, and so you can't merge them all together without any proper reweighting. And, finding out those probabilities is a tall task in and of its own, because you need to do this exact simulation to figure that out! Honestly, just keep the individual counts for flexibility during post-simulation statistics aggregation.
 
 Now let the pot value be 1 pot :), we can thus ignore it and just take the value within those big parentheses as the output, effectively expressing Equity as a fraction of the pot. The difference between Equity and EV is that EV measures in an actual monetary quantity, e.g. dollars or big blinds; and Equity assumes nothing else changes after you see your hand (e.g. no post-flop actions).
 
-The one thing I did not know before turned out to be the simplest, and the things I thought I knew threw me in for a giant loop. Amazing.
+<!-- The one thing I did not know before turned out to be the simplest, and the things I thought I knew threw me in for a giant loop. Amazing. -->
 
 _P.S.: I also handwaved a lot by not specifically require you to sample the community cards to get one realization of a game given a full set of hole cards. This in turn would create a third nested expectation that I'm not willing to handle. If the math is wrong somewhere because of this, please let me know &mdash; while I suffered immensely writing this post, I think it's a good mental exercise._

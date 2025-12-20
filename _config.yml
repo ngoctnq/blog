@@ -90,3 +90,8 @@ plugins:
   - jemoji
 paginate_path: /posts/page/:num/
 permalink: posts/:slug
+
+future:
+  relative_permalinks: true
+  strict_front_matter: false
+  show_drafts: false
