@@ -24,7 +24,8 @@ As usual, I was procrastinating my real research work by doing something irrelev
 
 Just to simplify, we are only concerning with the win/loss/tie probability. So, in a $n$-player game, given that you have seen your hole card and nothing else, what is the probability that you will win when the dust settles?
 
-From this point on, assume that we have a function that evaluates the win/loss/tie probability given a set of hands, that bruteforce through all possible combinations of community cards. It takes 30 seconds for one such run on my dated MacBook Air with single core and no PyPy, so it's fast enough™️ in tandem with parallelization. Now, the Monte Carlo (MC) estimation is being averaged across sampled possible starting hands.
+From this point on, assume that we have a function that evaluates the win/loss/tie probability given a set of hands, that bruteforce through all possible combinations of community cards. It takes 30 seconds for one such run on my dated MacBook Air with single core and no PyPy, so it's fast enough™️ in tandem with parallelization. Eventually, I'll be moving on to C++ and beyond though.
+<!-- Now, the Monte Carlo (MC) estimation is being averaged across sampled possible starting hands. -->
 
 ## The surefire way
 Intuitively, just sample all other hands, run the simulation, and average outcomes. Simple, right?
@@ -222,6 +223,8 @@ One last downfall for the road: similar to the mean-then-aggregate approach abov
 
 Now let the pot value be 1 pot :), we can thus ignore it and just take the value within those big parentheses as the output, effectively expressing Equity as a fraction of the pot. The difference between Equity and EV is that EV measures in an actual monetary quantity, e.g. dollars or big blinds; and Equity assumes nothing else changes after you see your hand (e.g. no post-flop actions).
 
+*And that's it folks! (for now). Please let me know if any math in this post is incorrect.*
+
 <!-- The one thing I did not know before turned out to be the simplest, and the things I thought I knew threw me in for a giant loop. Amazing. -->
 
-_P.S.: I also handwaved a lot by not specifically require you to sample the community cards to get one realization of a game given a full set of hole cards. This in turn would create a third nested expectation that I'm not willing to handle. If the math is wrong somewhere because of this, please let me know &mdash; while I suffered immensely writing this post, I think it's a good mental exercise._
+<!-- _P.S.: I also handwaved a lot by not specifically require you to sample the community cards to get one realization of a game given a full set of hole cards. This in turn would create a third nested expectation that I'm not willing to handle. If the math is wrong somewhere because of this, please let me know &mdash; while I suffered immensely writing this post, I think it's a good mental exercise._ -->
