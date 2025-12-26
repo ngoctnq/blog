@@ -1,20 +1,42 @@
----
----
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="https://www.w3.org/2005/Atom" xmlns:dc="https://purl.org/dc/elements/1.1/">
   <channel>
-    <title>{{ site.name | xml_escape }}</title>
-    <description>{% if site.description %}{{ site.description | xml_escape }}{% endif %}</description>
-    <link>{{ site.url }}</link>
-    <atom:link href="{{ page.path | absolute_url }}" rel="self" type="application/rss+xml" />
-    {% for post in site.posts limit:10 %}
+    <title>ngoc's blog</title>
+    <description></description>
+    <link>https://blog.ngoc.io</link>
+    <atom:link href="https://blog.ngoc.io/feed.xml" rel="self" type="application/rss+xml" />
+    
       <item>
-        <title>{{ post.title | xml_escape }}</title>
-        <description>{{ post.description | xml_escape }}</description>
-        <pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
-        <link>{{ post.url | absolute_url }}</link>
-        <guid isPermaLink="true">{{ post.url | absolute_url }}</guid>
+        <title>[WIP] Stacking chips and CUDA cores</title>
+        <description>I desperately needed that warmth from my GPU.</description>
+        <pubDate>Thu, 01 Jan 2026 00:00:00 -0600</pubDate>
+        <link>https://blog.ngoc.io/posts/stacking-chips</link>
+        <guid isPermaLink="true">https://blog.ngoc.io/posts/stacking-chips</guid>
       </item>
-    {% endfor %}
+    
+      <item>
+        <title>Control Variates and the Satisfying Telescoping Sum</title>
+        <description>A lot of sidetracking for such a simple algorithm.</description>
+        <pubDate>Fri, 26 Dec 2025 00:00:00 -0600</pubDate>
+        <link>https://blog.ngoc.io/posts/control-variate</link>
+        <guid isPermaLink="true">https://blog.ngoc.io/posts/control-variate</guid>
+      </item>
+    
+      <item>
+        <title>How [not] to run a Monte Carlo simulation</title>
+        <description>Greed is good.</description>
+        <pubDate>Fri, 19 Dec 2025 00:00:00 -0600</pubDate>
+        <link>https://blog.ngoc.io/posts/monte-carlo</link>
+        <guid isPermaLink="true">https://blog.ngoc.io/posts/monte-carlo</guid>
+      </item>
+    
+      <item>
+        <title>Problems and Solutions for installing Windows with OpenCore Legacy Patcher</title>
+        <description>Just my experience trying to install Boot Camp on a Legacy Mac.</description>
+        <pubDate>Mon, 21 Aug 2023 00:00:00 -0500</pubDate>
+        <link>https://blog.ngoc.io/posts/oclp-bootcamp</link>
+        <guid isPermaLink="true">https://blog.ngoc.io/posts/oclp-bootcamp</guid>
+      </item>
+    
   </channel>
 </rss>

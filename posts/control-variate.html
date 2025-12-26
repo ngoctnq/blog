@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>ngoc's blog | Control Variates and the Satisfying Telescoping Sum</title>
+  <meta name="description" content="A lot of sidetracking for such a simple algorithm.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Control Variates and the Satisfying Telescoping Sum">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://blog.ngoc.io/posts/control-variate">
+  <meta property="og:description" content="A lot of sidetracking for such a simple algorithm.">
+  <meta property="og:site_name" content="ngoc's blog">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://blog.ngoc.io/posts/control-variate">
+  <meta name="twitter:title" content="Control Variates and the Satisfying Telescoping Sum">
+  <meta name="twitter:description" content="A lot of sidetracking for such a simple algorithm.">
+
+  
+    <meta property="og:image" content="https://blog.ngoc.io/assets/og-image-2cdb6eff3b793c005b266304d75b24ec83fb83e5ce1133587094c80747cf55af.jpg">
+    <meta name="twitter:image" content="https://blog.ngoc.io/assets/og-image-2cdb6eff3b793c005b266304d75b24ec83fb83e5ce1133587094c80747cf55af.jpg">
+  
+
+  <link href="https://blog.ngoc.io/feed.xml" type="application/rss+xml" rel="alternate" title="ngoc's blog Last 10 blog posts" />
+
+  
+
+  <link rel="icon" type="image/x-icon" href="/assets/favicon-93edcce13a6832b025e9c9d3bf1abf4165d2daf5e75c370df0640605ecf2f6d0.ico">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon-798ee945c613a24d11ee774bda3c6b04b9cf62ea37369cee8f4c21ed35d45210.png">
+  
+  
+
+    
+      <link rel="stylesheet" type="text/css" href="/assets/light-5005d6676458c620a66eef9eb64f6ef95d5fb22cb92edb98a50b650769a49fb1.css">
+    
+
+  
+
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        enableMenu: false,
+        a11y: {
+          speech: false,
+          braille: false,
+        }
+      },
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+
+  <style>
+    mjx-container[display="true"] {
+      margin-top: 0px !important;
+      padding-top: 0px !important;
+    }
+  </style>
+
+</head>
+
+<body>
+  <main>
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav scrollappear">
+  <a href="/" class="header-logo" title="ngoc's blog">ngoc's blog</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="https://ngoc.io" title="About me">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-about">
+  <use href="/assets/about-ecf154b571ab8034ae00aeed91a3b7ad68db80b46d958753ad6216c919486e88.svg#icon-about" xlink:href="/assets/about-ecf154b571ab8034ae00aeed91a3b7ad68db80b46d958753ad6216c919486e88.svg#icon-about"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://github.com/ngoctnq" rel="noreferrer noopener" target="_blank" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-github">
+  <use href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github" xlink:href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://www.linkedin.com/in/ngoctnq" rel="noreferrer noopener" target="_blank" title="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-linkedin">
+  <use href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin" xlink:href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://open.spotify.com/artist/6A05EzEpk5wjEDwC9sTMO4" rel="noreferrer noopener" target="_blank" title="Hey, you found me!">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-spotify">
+  <use href="/assets/spotify-e5b8d68b83f4ca44a4a6dfbe2240ea050cb4d2fd38c1628be02cf2f61abe19f6.svg#icon-spotify" xlink:href="/assets/spotify-e5b8d68b83f4ca44a4a6dfbe2240ea050cb4d2fd38c1628be02cf2f61abe19f6.svg#icon-spotify"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:hi@ngoc.io" title="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-email">
+  <use href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email" xlink:href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-rss">
+  <use href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss" xlink:href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+  </ul>
+</nav>
+
+
+
+        <article class="article scrollappear">
+          <header class="article-header">
+            <h1>Control Variates and the Satisfying Telescoping Sum</h1>
+            <p>A lot of sidetracking for such a simple algorithm.</p>
+            <div class="article-list-footer">
+  <span class="article-list-date">
+    December 26, 2025
+  </span>
+  <span class="article-list-divider">-</span>
+  <span class="article-list-minutes">
+    
+    
+      14 minute read
+    
+  </span>
+  <span class="article-list-divider">-</span>
+  <div class="article-list-tags">
+    
+      
+      <a href="/tag/math" title="See all posts with tag 'Math'">Math</a>
+    
+  </div>
+</div>
+          </header>
+
+          <div class="article-content">
+            <p style="margin-bottom: 0.5em !important; font-size: .9em"><em>This is part 2 of the pokeqt series, where I do poker-related things because I liked a girl who do.</em></p>
+<ol style="font-size: .95em; opacity: 0.9">
+  <li><a href="/posts/monte-carlo">How [not] to run a Monte Carlo simulation</a></li>
+  <li><em>Control Variates and the Satisfying Telescoping Sum</em></li>
+  <li><a href="/posts/stacking-chips">Stacking chips and CUDA cores</a></li>
+</ol>
+
+<hr style="margin-bottom: 2em !important" />
+
+<p>Control variate is a technique to reduce variance in Monte Carlo simulations, by exploiting information on the error of a different known estimate to effectively offset which of the unknown one.</p>
+
+<p>But I’ll spare you the boring text, we both had enough of that last time. The gist of this post is that Control Variate is actually <em>sooooo</em> good for poker probability/equity estimation. So here comes the glaze fest in 4 parts.</p>
+
+<h2 id="so-what-exactly-is-a-control-variate">So what exactly is a Control Variate?</h2>
+
+<p>In short, control variate (CV) “corrects” a sample of a distribution being estimated $p(x)$ with another sample of a CV distribution $q(x)$, keeping the estimator unbiased while reducing variance. CV requires:</p>
+
+<ul>
+  <li>The mean of $q(x)$ is known analytically.</li>
+  <li>$p(x)$ and $q(x)$ must be highly correlated.</li>
+</ul>
+
+<p>The algorithm goes like this:</p>
+
+<ol>
+  <li>Sample $x\sim p(x)$</li>
+  <li>Sample $x’\sim q(x)$</li>
+  <li>Augment the original sample by $\bar{x}=x + c(\mathbb{E}[x’]-x’)$, where $c$ is some hyperparameter.</li>
+  <li>Use $\tilde{x}$ as if it’s $x$.</li>
+</ol>
+
+<p><em><sup>Be careful, the signs of $c$ in this text is flipped from the Wikipedia version.</sup></em></p>
+
+<p>We can trivially show that this new estimator is unbiased:</p>
+
+<div class="kdmath">$$
+\mathbb{E}[\bar{x}] = \mathbb{E}[x + c(\mathbb{E}[x']-x')] = \mathbb{E}[x] + c(\mathbb{E}[x'] - \mathbb{E}[x']) = \mathbb{E}[x].
+$$</div>
+
+<p>By doing some secret magic derivation and just copy-pasting the results from Wikipedia, we get the optimal value of $c$ to be:</p>
+
+<div class="kdmath">$$
+c^*=\frac{\text{Cov}(\bar{p},\bar{q})}{\text{Var}(\bar{q})},
+$$</div>
+
+<p>where $\bar{p}$ is the empirical estimate of the desired statistics of $p$. With this optimal parameter, we get a new variance for the new distribution of $\tilde{x}\sim\tilde{p}(x)$ as:</p>
+
+<div class="kdmath">$$
+\text{Var}(\tilde{p}) = (1 - [\text{Corr}(p, q)]^2)\text{Var}(p).
+$$</div>
+
+<p>The more correlated $p$ and $q$ are, the variance of the augmented estimator comes closer to 0.
+A special extreme case is when $p$ and $q$ are too similar to the point that they basically become one, then we would have $c^*=1$ and $\text{Var}(\tilde{p})=0$, as the estimator $\tilde{p}$ would just outputs exactly the known $\mathbb{E}[q]$ every time. But that’s too trivial… or is it?</p>
+
+<h2 id="the-first-great-thing-about-cv-for-this-task-is">The first great thing about CV for this task is…</h2>
+<p>…that there is a very obvious choice for $q(x)$, that is, the probabilities for a 2-player (heads-up) game! The logic should be simple enough that you can write a symbolic solver for this problem without the need for MC sampling. And, even if you only get an estimate for the mean of the 2-player distribution, from here on noted as $p_2(x)$, CV still would work well enough, just less effective and without the unbiased guarantee. For the second requirement, it’s pretty obvious that the same (canonical) hand in different $n$-player games would have very high correlation. I am not rigorously proving that though, you’d just have to take my word for it.</p>
+
+<p>Then, let’s say we’re estimating $p_3(x)$. We know that $p_2(x)$ and $p_3(x)$ are highly correlated, so the estimator variance can go down to near zero! That’s how magical it is.</p>
+
+<blockquote>
+  <p>But, that is only for the optimal $c$!</p>
+</blockquote>
+
+<p>Yes, but we can get a good estimate just by taking the statistics of the current samples. Or, <a href="https://www.value-at-risk.net/variance-reduction-with-control-variates-monte-carlo-simulation">just set $c=1$ if $p$ and $q$ are close enough</a>, which they are!</p>
+
+<p>So with $c=1$, the current algorithm would go something like this:</p>
+
+<ol>
+  <li>Sample $x\sim p_3(x)$</li>
+  <li>Sample $x’\sim p_2(x)$</li>
+  <li>Augment the original sample by $\bar{x}=x + (\mathbb{E}[x’]-x’)$.</li>
+  <li>Use $\tilde{x}$ as if it’s $x$.</li>
+</ol>
+
+<p>More concretely, (1) we sample a game for the 3-player setting and check to see which hand won, then (2) sample a game for the 2-player setting and also evaluate to see who won, and then finally apply the correction to (1) with (2) and the known win-probability of that hand from the analytic solution of the 2-player setting.</p>
+
+<p>By doing this, we are sampling twice per game, which effectively double the amount of computation needed. That’s why CV is usually used when the sampling overhead of $q$ is greatly less than which of $p$, which isn’t in our case. But there’s another saving grace:</p>
+
+<h2 id="the-second-great-thing-about-cv-for-this-task-is">The second great thing about CV for this task is…</h2>
+<p>… that we can completely reuse the sampled hands!</p>
+
+<p>But a slight tangent on result reuse first. Let’s say we are simulating the 3-player version: we simply sample the board and rank the hands, with two important properties:</p>
+<ul>
+  <li>The hole cards for each player are i.i.d. (permutation-invariant), and independent.</li>
+  <li>The relative rankings of hands do not change if a player is removed from play.</li>
+</ul>
+
+<p>Which means, after sampling a 3-player game and rank the players’ hands, we can trivially drop one player and get a perfectly random 2-player game state and result with zero additional computation! As a result, you can reuse one sampled game for all table sizes if you’re running multiple $n$-player simulations concurrently; and coupling with aggregating results from all hands in one game, the savings are massive.</p>
+
+<p>Now for the good part: since we can also use the zero-cost sampled game result from the $n-1$-player game as the CV for the $n$-player simulation, the overhead is basically zero. And the best part is, if we use the same hands and board, the correlation shoot through the roof! It’s obvious that if you win a 3-player heads-up game, you’re gonna win the same game if one of your opponent folds first. The other way around is slightly tricker, but we’ll handwavy a bit as the intuition remains. Consequently, the new optimal CV-corrected variance goes to 0, and we have a near perfect simulation.</p>
+
+<p>We will now simplify notation by dropping the 0 subscript, and focus on only one player at a time; and replace it with the player count of the variable: e.g. $Y_3$ represents whether the 0-index player wins in a 3-player game. The algorithm is then very simple:</p>
+<ol>
+  <li>Sample all hands $\{H_0, H_1, H_2\}$ and community (shared) cards $\mathcal{S}$.</li>
+  <li>Rank the hands, and evaluate $Y_{3}$ whether $H_0$ wins the 3-player game, and $Y_{2}$ whether $H_0$ wins against $H_1$ alone (e.g. if $H_2$ folds without looking at anything).</li>
+  <li>Augment the sampled evaluation by $\bar{Y}_3= Y_3 + (\mathbb{E}[Y_2]- Y_2)$.</li>
+  <li>Update the tracker of the corresponding canonical class of $H_0$ with $\bar{Y}_{3}$.</li>
+</ol>
+
+<p>Another way to look at this construction is that we start the estimate of $Y_{3}$ by $\mathbb{E}[Y_{2}]$, then we estimate the expectation of $\Delta_{3} \overset{\Delta}{=} Y_{3} - Y_{2}$ instead:</p>
+
+<div class="kdmath">$$
+\mathbb{E}[{Y}_{3}]
+= \mathbb{E}[Y_{3} - Y_{2}] + \mathbb{E}[Y_{2}]
+= \mathbb{E}[\Delta_{3}] + \mathbb{E}[Y_{2}].
+$$</div>
+
+<p>The variance of $\Delta_{3}$ will be much lower, as $Y_{3}$ and $Y_{2}$ tend to agree: if you win a 3-player game, you’re guaranteed to win a 2-player game; if you lose a 2-player game, you’re guaranteed to lose the 3-player game, and the other direction is likely to be the same as well. To put it in another way, we are tracking only the changes induced by a player folding pre-flop; and, because there is <em>no</em> change most of the times, this new random variable desirably has very little noise. This new underlying variable is the reason why $\mathbb{E}[\bar{Y}_{(\cdot)}]$ and $\mathbb{E}[{Y}_{(\cdot)}]$ both estimate the same entity, but the former gets to a have much smaller variance.</p>
+
+<h2 id="the-third-great-thing-about-cv-for-this-task-is">The third great thing about CV for this task is…</h2>
+<p>… that you can <em>cleanly</em> bootstrap it across increasing player-count settings to create what’s called a multi-level MC.</p>
+
+<p>Perhaps the most natural question to ask is: what happens if I apply CV recursively?  Recall that we have a CV-corrected 3-player estimate of $\bar{Y}_3= Y_3 + (\mathbb{E}[Y_2]- Y_2)$. If we do the same thing for the 4-player setting:</p>
+
+<div class="kdmath">$$
+\begin{align*}
+\bar{Y}_{4}
+&= Y_{4} + (\mathbb{E}[\bar{Y}_{3}]- \bar{Y}_{3}) \\
+&= Y_{4} + \mathbb{E}[{Y}_{3}] - (Y_{3} + [\mathbb{E}[Y_{2}]- Y_{2})]
+& \text{(}\bar{Y}_{3}\text{ unbiased)} \\
+&= Y_{4} + \mathbb{E}[{Y}_{3} - Y_{2}] - (Y_{3} - Y_{2}) \\
+&= Y_{4} + \mathbb{E}[{\Delta}_{3}] - \Delta_{3}.
+\end{align*}
+$$</div>
+
+<p>If we condition $\bar{Y}_4$ on the CV-corrected sample $\bar{Y}_3$, we are actually effectively using $\Delta_3 = Y_3 - Y_2$ as the control variate. By rewriting this CV construction to only contain original (pre-controlled) variables, we can easily point out a few problems:</p>
+<ul>
+  <li>We do not have the exact $\mathbb{E}[{Y}_3]$ (and as a result, $\mathbb{E}[\Delta_3]$), so bias is introduced.</li>
+  <li>It’s not guaranteed that $Y_4$ and $\Delta_3$ are correlated.</li>
+  <li>Variance of $\Delta_3$ is low, so coupled with the unknown correlation, the optimal value for $c^*\ne 1$ becomes much less obvious.</li>
+</ul>
+
+<p>To illustrate the point on correlation, $\Delta_{3}$ can only take on the values of 0 or $-1$, where $-1$ implies that the added 3rd player has a hand that beat your currently winning one, and 0 if nothing changes — you cannot turn a loss into a win with the addition of the 3rd hand. We enumerate all these possibilities:</p>
+
+<ul>
+  <li>If $Y_3-Y_2 = -1$, this means that $Y_3=0$ and $Y_2 = 1$. In this case, you <em>cannot</em> win the 4-player game because you already lost the 3-player game, therefore $Y_4=0$.</li>
+  <li>If $Y_3-Y_2 = 0$, this doesn’t let you know much: you could be already having trash hands and losing regardless (i.e. $Y_2=Y_3=Y_4=0$), or you could be having nuts that are basically unbeatable (i.e. $Y_2=Y_3=Y_4=1$), or just complete ambiguity whether the next player will have something that cracks you (i.e. $Y_2=Y_3=1,Y_4\overset{?}{=}0$).</li>
+</ul>
+
+<p>The last ambiguity, coupled with the fact that $Y_4=0$ more often than $\Delta_3=-1$, is the reason why I only said correlation is not <em>guaranteed</em>, even though I imagine it would work somewhat decently. But the bigger issue is with bias; and this same bias issue also affects the possibility of just applying CV on the pre-controlled estimate where $\bar{Y}_4= Y_4 + (\mathbb{E}[Y_3]- Y_3)$. So what do we do instead?</p>
+
+<p>Well, we could cancel out these biases by combining 2 CVs! Let the first CV be $-\Delta_{3}$ (note the minus) and the second CV be our plain old $Y_{3}$. Then taking the average of the two controlled random variables, we have:</p>
+
+<div class="kdmath">$$
+\begin{align*}
+\bar{Y}_{4}
+&= \frac{1}{2}\left[Y_{4} + \mathbb{E}[{Y}_{2} - Y_{3}] - (Y_{2} - Y_{3})\right]
++ \frac{1}{2}\left[Y_{4} + (\mathbb{E}[Y_{3}]- Y_{3})\right] \\
+&= Y_{4} + \frac12\mathbb{E}[{Y}_{2}] - \frac12 Y_{2}
+\end{align*}
+$$</div>
+
+<p>Two things popped up immediately:</p>
+<ol>
+  <li>We now no longer require (a biased estimate of) $\mathbb{E}[Y_3]$; and this new estimator is consistent, i.e. $\mathbb{E}[\bar{Y}_4]=\mathbb{E}[Y_4]$.</li>
+  <li>This is equivalent to just biting the bullet and just use $Y_2$ as the CV, but with coefficient $c=1/2$.</li>
+</ol>
+
+<p>While $Y_4$ would be slightly less correlated to $Y_2$ than $Y_3$, it should still do the job. Additionally, this new coefficient would actually work better than the default $c=1$! Note that $Y_4$ (and $Y_n$ in general) would have a lot more zeros than ones comparing to $Y_2$, and this trend gets worse as $n$ increases. This implies that we are controlling a low-variance variable with a higher-variance variable; thus using $Y_2$ as-is as the CV may even <em>increase</em> the estimator’s variance. However, we can offset this by lowering the CV coefficient; and in this case, we reduce the CV’s variance by a factor of 4.
+<!-- &mdash; which coincides with the approximately-$1/n$ decay of equity. --></p>
+
+<p>Let’s scale up to any $n$:</p>
+
+<div class="kdmath">$$
+\begin{align*}
+\bar{Y}_{n}
+&=\frac1{n-2}\left[Y_n + \mathbb{E}[Y_{n-1}]- {Y}_{n-1}
++\sum_{i=3}^{n-1}\left[Y_n - \mathbb{E}[\Delta_{i}] + \Delta_{i}\right]
+\right] \\
+&=Y_n
++ \frac1{n-2}\mathbb{E}\left[Y_{n-1}-\sum_{i=3}^{n-1}\Delta_{i}\right]
+- \frac1{n-2}\left[Y_{n-1}-\sum_{i=3}^{n-1}\Delta_{i}\right] \\
+&=Y_n
++ \frac1{n-2}\mathbb{E}\left[Y_{2}\right]
+- \frac1{n-2}Y_2.
+\end{align*}
+$$</div>
+
+<p>The simplification for the last derivation comes from our promised telescoping sum:</p>
+
+<div class="kdmath">$$
+Y_{n-1}-\sum_{i=3}^{n-1}\Delta_{i} = Y_{n-1} - (Y_{n-1} - Y_{n-2}) - \dots - (Y_3 - Y_2) = Y_2.
+$$</div>
+
+<p><sub>Okay, maybe it isn’t as exciting as I found it when I first found it.</sub></p>
+
+<p>There are many ways to combine these CV constructions so that every terms except for $Y_2$ cancels out (somehow this reminds me of conditional convergence…), but there are a couple nice properties with this version:</p>
+<ul>
+  <li>The telescoping sum is clean — you gotta admit it’s pretty satisfying…</li>
+  <li>Breaking down the gap between $Y_n - Y_2$ as a sum of $\Delta_i$ spreads out the <em>mass</em> of the total difference, which significantly reduces the variances of the CVs.</li>
+  <li>The “starting point” for the estimator $\mathbb{E}[Y_n]$ is $\frac{1}{n-2}\mathbb{E}[Y_2]$, which is more in line with the $1/n$ fair-share baseline for equity.</li>
+</ul>
+
+<p>With that being said, that selection of $c$ is still probably not the optimal choice; and we used $-\Delta_{(\cdot)}$ mostly to cancel out the bias. But there is a better way…</p>
+
+<h2 id="the-fourth-great-and-probably-best-thing-about-cv-for-this-task-is">The fourth great, and probably best, thing about CV for this task is…</h2>
+<p>… that you can just use this as a constant-time post-processing variance correction.</p>
+
+<p>Since the formula for control variate is linear, we can actually just apply the correction at the very end on the final estimate. The benefit actually goes beyond the near-zero computation: we can actually estimate the optimal $c^*$! Yes, we have to keep track of the covariances of each variable and its corresponding control variate, but that’s a very small price to pay for salvation. In fact, we only have to additionally keep track of only the total of the product of the two variables:</p>
+
+<div class="kdmath">$$
+\text{Cov}(X, Y) = \mathbb{E}[(X-\mathbb{E}X)(Y-\mathbb{E}Y)] = \mathbb{E}[XY] - \mathbb{E}X\mathbb{E}Y
+$$</div>
+
+<!-- We still run into the issue of rounding error if either of these variables is a `double`, but this error goes away quickly when the sample size gets big enough. -->
+
+<p>Another reason why I think this is the best thing about CV for this task is that it solves a problem that I’ve been hiding from you this whole time, that is, what do we use as the CV for $k$-way tie? Those statistics are not very correlated to the 2-way tie if $k&gt; &gt;2$, and even less to the (heads-up) winning/losing probability. But, they are correlated to the <em>equity</em>; in fact, equity is linear with respect to the $k$-way tie statistics with coefficient $1/k$! We can further assume that the $n$-player equity is correlated to the 2-player counterpart, and use the heads-up equity as the CV for any $k$-way tie. But then, two new issues arise with this construction:</p>
+<ul>
+  <li>$k$-way tie probabilities decay rapidly as $k$ increases, so using heads-up equity as the CV for all of them is very suboptimal.</li>
+  <li>Equity is floating-point, which means that rounding error will be catastrophic.</li>
+</ul>
+
+<p>There’s a magic bullet that fixes all of our problems, that is, we can determine the optimal <em>mixing</em> of CVs post-simulation! If we can use the heads-up equity, which is $\mathbb{P}_\mathrm{win} + 1/2\mathbb{P}_\mathrm{tie}$, as the CV, we can dynamically replace those mixing coefficients so that the final CV is best correlated to the estimating variable at hand (note that the aforementioned CV coefficient $c$ can be lumped into these mixing coefficients). Then, each $k$-way tie in a $n$-player game gets a tailored CV, we only to keep track of the covariances of binary (not floating-point) variables, and no more arbitrary $\Delta_i$ construction just to cancel out the bias! How amazing is that?</p>
+
+<p>And the implementation is dead simple: adapting the optimal coefficient calculation to the multivariate setting, we have:</p>
+
+<div class="kdmath">$$
+\mathbf{c}^*=\mathbf{\Sigma}_C^{-1}\Sigma_{CY},
+$$</div>
+
+<p>where $\mathbf{\Sigma}_C$ is the covariance matrix of the CVs, which in this case, the heads-up win and tie probabilities (we drop the loss probability because it is linearly dependent to the other two); and $\Sigma_{CY}$ is the covariance between the CVs and <em>all</em> other estimating variables. Yes, you heard me right, one $2\times 2$ matrix inversion which has a closed-form formula, and one matrix multiplication. It’s really that simple.</p>
+
+<p>Before we move on, let me speedrun through a couple of concerns:</p>
+<blockquote>
+  <p>When we use our sampled statistics to compute the optimal CV coefficients, we are introducing a small bias!</p>
+</blockquote>
+
+<p>In order for the CV method to be unbiased, $c$ (usually a constant) and the CV must be independent, but they aren’t in this case. There are ways to deal with this issue, but perhaps the most notable one is <em>splitting</em>. That is, we split our simulation statistics into two halves $A$ and $B$, then we use $A$ to find the optimal coefficients for $B$, and vice versa; and at the end aggregate back the two halves — that way, we can use all of our samples for the final estimate without having to set out some samples for covariance estimation.
+However, this approach might gives us a worse estimate, as our main problem is variance rather than bias: halving the dataset worsens the covariance estimates of both the CVs and the target variables for each half, and aggregating them back later on doesn’t help enough to justify both the minimal bias and the code overhead.</p>
+
+<blockquote>
+  <p>If we’re throwing the kitchen sink into the mix, why not use the statistics of <strong>all</strong> hands as CVs?</p>
+</blockquote>
+
+<p>You can try, but it would get unruly really fast, as a lot of hands are very highly correlated (e.g. <code class="highlighter-rouge">AKs</code>, <code class="highlighter-rouge">AQs</code>, and <code class="highlighter-rouge">KQs</code>). On the target ($n$-player) side, a small tweak in coefficients would do the trick; and on the CV side (heads-up), they are so similar to each other that multicollinearity occurs. This makes $\mathbf{\Sigma}_C$ very <a href="https://en.wikipedia.org/wiki/Condition_number">ill-conditioned</a>, causing heavy numerical instabilities; and the quadratic scaling in matrix size certainly doesn’t help with floating-point precision nor the runtime. The common fix for effectively low-rank matrices is dimensionality reduction (e.g. PCA), but it’s not so simple in our case: it’s very difficult to keep track of the covariances of these mixed variables, especially when we need to know the PCA results <em>before</em> the simulation. Another approach is to select some fixed hands as anchors beforehand (e.g. flush, straight, high pair, trash), but that might be overcomplicating things. I prefer a simple full-rank analytical $2\times 2$-matrix inversion — but I might revisit this idea if I were to be making an actual poker software.</p>
+
+<h2 id="the-final-algorithm">The final algorithm</h2>
+<p>Putting it all together, we have our final algorithm: for a $n\ge 2$-player game:</p>
+
+<ol>
+  <li>Sample the whole game, including hole cards and community cards.</li>
+  <li>Get all players’ results from the game simulation.</li>
+  <li>Use said ranking to evaluate the result for all $n$-player games. Also record covariances between the variables and their corresponding control variates.</li>
+  <li>Accumulate across all hands.</li>
+</ol>
+
+<p>Then at the end (or any checkpoint), compute the statistics, and finally apply control variate using the analytical 2-player result — simple as that. While we lose out of the ability to stratify/upsample per canonical hand, the math and implementation is so satisfying that I’m willing to turn a blind eye. Now, onwards to the code!</p>
+
+<h2 id="bonus-bait-and-switch"><em>Bonus:</em> Bait-and-switch</h2>
+<p>A keen reader would probably have realized that the current version of the algorithm actually changed, and the previous proof would not hold anymore. Specifically, for a $n&lt;9$-player game, the $n$ players are not playing against each other anymore; instead, they are playing with the <em>next</em> 7 players to their right!</p>
+
+<p>Actually, that doesn’t change anything: the hands are still dealt fairly, and the proof did not require any correlation (or lack thereof) between different players’ outcomes within game(s). But this time, now that each player in the table is playing a (partially) different game, variance analysis would actually gets complicated. But that’s the tradeoff we pay for both runtime (9 samples per simulation even for 3-player game), and we still have control variates. Analysis on the variance guarantee of this new algorithm is once again left as an exercise to the readers, but this time the it’s because the proof seems complicated and I have sunk way too much time and mental wellness on this project; so if it’s possible, please do it and drop a comment below — thank you!</p>
+
+<p>Pushing it to the limit, technically it is possible to be even greedier, by accumulating <em>all</em> results in <em>each</em> subgame. Even greedier, you can evaluate all possible subgames, by running through all possible combination of the players. However, my impression is that the amount of information gained is little comparing to the increased variance induced by reusing old samples; and it becomes a lot more difficult to do CV both design-wise and implementation. As such, I think here is a pretty good stopping point.</p>
+
+          </div>
+          <div class="article-share">
+            <a  href="/posts/stacking-chips" title="[WIP] Stacking chips and CUDA cores">
+              <svg viewBox="-100 -100 712 712"><path d="M198,256L391.6,62.4c14.3-14.3,14.3-37.4,0-51.7c-14.3-14.3-37.5-14.3-51.7,0L120.4,230.1c-6.8,6.8-10.7,16.2-10.7,25.9c0,9.6,3.9,19.1,10.7,25.9l219.4,219.4c14.3,14.3,37.4,14.3,51.7,0c14.3-14.3,14.3-37.4,0-51.7L198,256z"/></svg>
+            </a>
+
+            
+            
+            <a class="share" href="https://twitter.com/intent/tweet?text=Control+Variates+and+the+Satisfying+Telescoping+Sum%20-%20https://blog.ngoc.io/posts/control-variate" title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z"/></svg>
+            </a>
+            <a class="share" href="https://www.facebook.com/sharer/sharer.php?u=https://blog.ngoc.io/posts/control-variate" title="Share on Facebook" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z"/></svg>
+            </a>
+
+            <a  href="/posts/monte-carlo" title="How [not] to run a Monte Carlo simulation">
+              <svg viewBox="-100 -100 712 712"><path d="M391.5,230.1L172.1,10.7c-14.3-14.3-37.4-14.3-51.7,0c-14.3,14.3-14.3,37.4,0,51.7L314,256L120.4,449.6c-14.3,14.3-14.3,37.4,0,51.7c14.3,14.3,37.4,14.3,51.7,0l219.4-219.4c6.8-6.8,10.7-16.2,10.7-25.9C402.2,246.4,398.3,236.9,391.5,230.1z"/></svg>
+            </a>
+          </div>
+
+          <!--  -->
+            
+          <div class="article-comments"></div>
+          <script src="https://giscus.app/client.js"
+            data-repo="ngoctnq/blog"
+            data-repo-id="R_kgDOKJ4d2g"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOKJ4d2s4CYyNy"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-theme="noborder_light"
+            data-input-position="top"
+            data-lang="en"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async>
+          </script>
+          <noscript>Please enable JavaScript to view the comments.</noscript>
+
+        </article>
+        <footer class="footer scrollappear">
+  <p>
+    just. keep. swimming.
+  </p>
+</footer>
+      </div>
+    </div>
+  </main>
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NG7N647RWK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NG7N647RWK');
+  </script>
+
+
+<script src="/assets/vendor-3ee2c63bbac916f96cd7f90e83ab767f058ead1301444c9966f5156911c8be7f.js" type="text/javascript"></script>
+
+
+  <script src="/assets/webfonts-96493456d319d1bf419afdf8701552d4d486fee6afd304897d4fd81eb4e0cc0b.js" type="text/javascript"></script>
+
+
+
+  <script src="/assets/scrollappear-e2da8ea567e418637e31266cc5302126eaa79f62a2273739086358b589a89ee6.js" type="text/javascript"></script>
+
+
+<script src="/assets/application-e583c14ca11e95e79eee79fe68a7ba5f766b85e70bb478cb16bf929ebab16545.js" type="text/javascript"></script>
+
+
+</body>
+</html>

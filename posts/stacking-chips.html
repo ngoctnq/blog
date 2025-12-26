@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>ngoc's blog | [WIP] Stacking chips and CUDA cores</title>
+  <meta name="description" content="I desperately needed that warmth from my GPU.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="[WIP] Stacking chips and CUDA cores">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://blog.ngoc.io/posts/stacking-chips">
+  <meta property="og:description" content="I desperately needed that warmth from my GPU.">
+  <meta property="og:site_name" content="ngoc's blog">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://blog.ngoc.io/posts/stacking-chips">
+  <meta name="twitter:title" content="[WIP] Stacking chips and CUDA cores">
+  <meta name="twitter:description" content="I desperately needed that warmth from my GPU.">
+
+  
+    <meta property="og:image" content="https://blog.ngoc.io/assets/og-image-2cdb6eff3b793c005b266304d75b24ec83fb83e5ce1133587094c80747cf55af.jpg">
+    <meta name="twitter:image" content="https://blog.ngoc.io/assets/og-image-2cdb6eff3b793c005b266304d75b24ec83fb83e5ce1133587094c80747cf55af.jpg">
+  
+
+  <link href="https://blog.ngoc.io/feed.xml" type="application/rss+xml" rel="alternate" title="ngoc's blog Last 10 blog posts" />
+
+  
+
+  <link rel="icon" type="image/x-icon" href="/assets/favicon-93edcce13a6832b025e9c9d3bf1abf4165d2daf5e75c370df0640605ecf2f6d0.ico">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon-798ee945c613a24d11ee774bda3c6b04b9cf62ea37369cee8f4c21ed35d45210.png">
+  
+  
+
+    
+      <link rel="stylesheet" type="text/css" href="/assets/light-5005d6676458c620a66eef9eb64f6ef95d5fb22cb92edb98a50b650769a49fb1.css">
+    
+
+  
+
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        enableMenu: false,
+        a11y: {
+          speech: false,
+          braille: false,
+        }
+      },
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+
+  <style>
+    mjx-container[display="true"] {
+      margin-top: 0px !important;
+      padding-top: 0px !important;
+    }
+  </style>
+
+</head>
+
+<body>
+  <main>
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav scrollappear">
+  <a href="/" class="header-logo" title="ngoc's blog">ngoc's blog</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="https://ngoc.io" title="About me">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-about">
+  <use href="/assets/about-ecf154b571ab8034ae00aeed91a3b7ad68db80b46d958753ad6216c919486e88.svg#icon-about" xlink:href="/assets/about-ecf154b571ab8034ae00aeed91a3b7ad68db80b46d958753ad6216c919486e88.svg#icon-about"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://github.com/ngoctnq" rel="noreferrer noopener" target="_blank" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-github">
+  <use href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github" xlink:href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://www.linkedin.com/in/ngoctnq" rel="noreferrer noopener" target="_blank" title="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-linkedin">
+  <use href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin" xlink:href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://open.spotify.com/artist/6A05EzEpk5wjEDwC9sTMO4" rel="noreferrer noopener" target="_blank" title="Hey, you found me!">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-spotify">
+  <use href="/assets/spotify-e5b8d68b83f4ca44a4a6dfbe2240ea050cb4d2fd38c1628be02cf2f61abe19f6.svg#icon-spotify" xlink:href="/assets/spotify-e5b8d68b83f4ca44a4a6dfbe2240ea050cb4d2fd38c1628be02cf2f61abe19f6.svg#icon-spotify"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:hi@ngoc.io" title="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-email">
+  <use href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email" xlink:href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-rss">
+  <use href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss" xlink:href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+  </ul>
+</nav>
+
+
+
+        <article class="article scrollappear">
+          <header class="article-header">
+            <h1>[WIP] Stacking chips and CUDA cores</h1>
+            <p>I desperately needed that warmth from my GPU.</p>
+            <div class="article-list-footer">
+  <span class="article-list-date">
+    January 1, 2026
+  </span>
+  <span class="article-list-divider">-</span>
+  <span class="article-list-minutes">
+    
+    
+      3 minute read
+    
+  </span>
+  <span class="article-list-divider">-</span>
+  <div class="article-list-tags">
+    
+      
+      <a href="/tag/ml" title="See all posts with tag 'ML'">ML</a>
+    
+  </div>
+</div>
+          </header>
+
+          <div class="article-content">
+            <p style="margin-bottom: 0.5em !important; font-size: .9em"><em>This is part 3 of the pokeqt series, where I do poker-related things because I liked a girl who do.</em></p>
+<ol style="font-size: .95em; opacity: 0.9">
+  <li><a href="/posts/monte-carlo">How [not] to run a Monte Carlo simulation</a></li>
+  <li><a href="/posts/control-variate">Control Variates and the Satisfying Telescoping Sum</a></li>
+  <li><em>Stacking chips and CUDA cores</em></li>
+</ol>
+
+<hr style="margin-bottom: 2em !important" />
+
+<p>We finally came to the implementation section, woo. The source code for all of these experiments can be found <a href="https://github.com/ngoctnq/pokeqt">here</a>.</p>
+
+<h2 id="heads-up-analytics">Heads up, analytics!</h2>
+
+<p>The first thing we need to do to write an analytical solver for the heads-up setting. Now, I could use a bazillion of existing solutions on the internet, but that’s no fun. And, I’m writing it all in branchless logic so that I can later run it on CUDA, because branching ruins warp’s parallelism. So here are a couple of interesting functions that I gathered throughout the internet — note that all of these are done on unsigned integers.</p>
+
+<h3 id="get-the-maximum-of-two-numbers">Get the maximum of two numbers</h3>
+
+<p>We will use this to compare the computed evaluations of hands.</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="kt">uint32_t</span> <span class="nf">get_max</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">a</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">a</span> <span class="o">^</span> <span class="p">((</span><span class="n">a</span> <span class="o">^</span> <span class="n">b</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">-</span><span class="p">(</span><span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">));</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>If <code class="highlighter-rouge">a &lt; b</code>, <code class="highlighter-rouge">-(a &lt; b)</code> evaluates to -1, which after underflow is all 1s. We then get <code class="highlighter-rouge">a ^ (a ^ b) = b</code>. Otherwise, <code class="highlighter-rouge">-(a &lt; b)</code> evaluates to 0, which leaves us with only <code class="highlighter-rouge">a</code>.</p>
+
+<h3 id="keep-only-the-most-significant-non-zero-bit">Keep only the most-significant non-zero bit</h3>
+
+<p>This is used to keep only the largest hand (e.g. top flush).</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="kt">uint16_t</span> <span class="nf">keep_top_bit</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">num</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">num</span> <span class="o">|=</span> <span class="n">num</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="n">num</span> <span class="o">|=</span> <span class="n">num</span> <span class="o">&gt;&gt;</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="n">num</span> <span class="o">|=</span> <span class="n">num</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">;</span>
+  <span class="n">num</span> <span class="o">|=</span> <span class="n">num</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">num</span> <span class="o">-</span> <span class="p">(</span><span class="n">num</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Basically, the chain of <code class="highlighter-rouge">or</code>s will make every bit after the most-significant non-zero bit to be 1, hence the name. Then, we shift it right by 1, meaning now it has one less 1 bit, and remove that smeared suffix from the full smear. Voila, only the MSB is left. You can add another <code class="highlighter-rouge">num |= num &gt;&gt; 16;</code> if you want this to work with 32-bit.</p>
+
+<p><em>I might be the only one who finds the name bit-smearing kinda funny.</em></p>
+
+<h3 id="bonus-check-if-number-is-0"><em>Bonus:</em> Check if number is 0</h3>
+
+<p>This can be used if you don’t trust the compiler to not branch, or to produce a 0/1 when doing a boolean comparison. But I’m learning to have more faith…</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="kt">uint32_t</span> <span class="nf">is_all_zeros</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">uint32_t</span> <span class="n">y</span> <span class="o">=</span> <span class="o">-</span><span class="n">x</span><span class="p">;</span>  <span class="c1">// Zero: MSB=0, non-zeros: MSB=1</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">y</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">31</span><span class="p">;</span>   <span class="c1">// Zero: MSB=1, non-zeros: MSB=0</span>
+  <span class="k">return</span> <span class="n">y</span><span class="p">;</span>         <span class="c1">// Zero: 1, non-zeros: 0</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="put-it-all-together">Put it all together</h3>
+<p>The rest of the code is just boring branchless arithmetics, where I abused the boolean-to-numeric pipeline to death. You can read through the source code in the link above. I even included my debugging code that prints things out as a Christmas gift too.</p>
+
+<h2 id="roll-the-dice-baby">Roll the dice, baby</h2>
+<p>With all the above helpers, we can now start moving towards writing a Monte Carlo code to estimate these probabilities.</p>
+
+<h2 id="bonus-dress-the-part"><em>Bonus:</em> Dress the part</h2>
+<p>Well, can’t be a complete project without the GUI showing live-update! — said my perfectionism. So I wrote a GUI that fetches the server and display live estimate update. After terminating the simulation, the result is stored in a JSON file that is served statically. The source code is also in the repository above, and you can check the site out at <a href="https://ngoc.io/pokeqt">this link</a>.</p>
+
+<p>Thank you for reading this far! Have fun, and gamble responsibly.</p>
+
+          </div>
+          <div class="article-share">
+            <a class="disabled" href="" title="">
+              <svg viewBox="-100 -100 712 712"><path d="M198,256L391.6,62.4c14.3-14.3,14.3-37.4,0-51.7c-14.3-14.3-37.5-14.3-51.7,0L120.4,230.1c-6.8,6.8-10.7,16.2-10.7,25.9c0,9.6,3.9,19.1,10.7,25.9l219.4,219.4c14.3,14.3,37.4,14.3,51.7,0c14.3-14.3,14.3-37.4,0-51.7L198,256z"/></svg>
+            </a>
+
+            
+            
+            <a class="share" href="https://twitter.com/intent/tweet?text=[WIP]+Stacking+chips+and+CUDA+cores%20-%20https://blog.ngoc.io/posts/stacking-chips" title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z"/></svg>
+            </a>
+            <a class="share" href="https://www.facebook.com/sharer/sharer.php?u=https://blog.ngoc.io/posts/stacking-chips" title="Share on Facebook" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z"/></svg>
+            </a>
+
+            <a  href="/posts/control-variate" title="Control Variates and the Satisfying Telescoping Sum">
+              <svg viewBox="-100 -100 712 712"><path d="M391.5,230.1L172.1,10.7c-14.3-14.3-37.4-14.3-51.7,0c-14.3,14.3-14.3,37.4,0,51.7L314,256L120.4,449.6c-14.3,14.3-14.3,37.4,0,51.7c14.3,14.3,37.4,14.3,51.7,0l219.4-219.4c6.8-6.8,10.7-16.2,10.7-25.9C402.2,246.4,398.3,236.9,391.5,230.1z"/></svg>
+            </a>
+          </div>
+
+          <!--  -->
+            
+          <div class="article-comments"></div>
+          <script src="https://giscus.app/client.js"
+            data-repo="ngoctnq/blog"
+            data-repo-id="R_kgDOKJ4d2g"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOKJ4d2s4CYyNy"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-theme="noborder_light"
+            data-input-position="top"
+            data-lang="en"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async>
+          </script>
+          <noscript>Please enable JavaScript to view the comments.</noscript>
+
+        </article>
+        <footer class="footer scrollappear">
+  <p>
+    just. keep. swimming.
+  </p>
+</footer>
+      </div>
+    </div>
+  </main>
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NG7N647RWK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NG7N647RWK');
+  </script>
+
+
+<script src="/assets/vendor-3ee2c63bbac916f96cd7f90e83ab767f058ead1301444c9966f5156911c8be7f.js" type="text/javascript"></script>
+
+
+  <script src="/assets/webfonts-96493456d319d1bf419afdf8701552d4d486fee6afd304897d4fd81eb4e0cc0b.js" type="text/javascript"></script>
+
+
+
+  <script src="/assets/scrollappear-e2da8ea567e418637e31266cc5302126eaa79f62a2273739086358b589a89ee6.js" type="text/javascript"></script>
+
+
+<script src="/assets/application-e583c14ca11e95e79eee79fe68a7ba5f766b85e70bb478cb16bf929ebab16545.js" type="text/javascript"></script>
+
+
+</body>
+</html>

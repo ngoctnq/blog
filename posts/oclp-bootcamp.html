@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>ngoc's blog | Problems and Solutions for installing Windows with OpenCore Legacy Patcher</title>
+  <meta name="description" content="Just my experience trying to install Boot Camp on a Legacy Mac.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Problems and Solutions for installing Windows with OpenCore Legacy Patcher">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://blog.ngoc.io/posts/oclp-bootcamp">
+  <meta property="og:description" content="Just my experience trying to install Boot Camp on a Legacy Mac.">
+  <meta property="og:site_name" content="ngoc's blog">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://blog.ngoc.io/posts/oclp-bootcamp">
+  <meta name="twitter:title" content="Problems and Solutions for installing Windows with OpenCore Legacy Patcher">
+  <meta name="twitter:description" content="Just my experience trying to install Boot Camp on a Legacy Mac.">
+
+  
+    <meta property="og:image" content="https://blog.ngoc.io/assets/og-image-2cdb6eff3b793c005b266304d75b24ec83fb83e5ce1133587094c80747cf55af.jpg">
+    <meta name="twitter:image" content="https://blog.ngoc.io/assets/og-image-2cdb6eff3b793c005b266304d75b24ec83fb83e5ce1133587094c80747cf55af.jpg">
+  
+
+  <link href="https://blog.ngoc.io/feed.xml" type="application/rss+xml" rel="alternate" title="ngoc's blog Last 10 blog posts" />
+
+  
+
+  <link rel="icon" type="image/x-icon" href="/assets/favicon-93edcce13a6832b025e9c9d3bf1abf4165d2daf5e75c370df0640605ecf2f6d0.ico">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon-798ee945c613a24d11ee774bda3c6b04b9cf62ea37369cee8f4c21ed35d45210.png">
+  
+  
+
+    
+      <link rel="stylesheet" type="text/css" href="/assets/light-5005d6676458c620a66eef9eb64f6ef95d5fb22cb92edb98a50b650769a49fb1.css">
+    
+
+  
+
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        enableMenu: false,
+        a11y: {
+          speech: false,
+          braille: false,
+        }
+      },
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+
+  <style>
+    mjx-container[display="true"] {
+      margin-top: 0px !important;
+      padding-top: 0px !important;
+    }
+  </style>
+
+</head>
+
+<body>
+  <main>
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav scrollappear">
+  <a href="/" class="header-logo" title="ngoc's blog">ngoc's blog</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="https://ngoc.io" title="About me">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-about">
+  <use href="/assets/about-ecf154b571ab8034ae00aeed91a3b7ad68db80b46d958753ad6216c919486e88.svg#icon-about" xlink:href="/assets/about-ecf154b571ab8034ae00aeed91a3b7ad68db80b46d958753ad6216c919486e88.svg#icon-about"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://github.com/ngoctnq" rel="noreferrer noopener" target="_blank" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-github">
+  <use href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github" xlink:href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://www.linkedin.com/in/ngoctnq" rel="noreferrer noopener" target="_blank" title="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-linkedin">
+  <use href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin" xlink:href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://open.spotify.com/artist/6A05EzEpk5wjEDwC9sTMO4" rel="noreferrer noopener" target="_blank" title="Hey, you found me!">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-spotify">
+  <use href="/assets/spotify-e5b8d68b83f4ca44a4a6dfbe2240ea050cb4d2fd38c1628be02cf2f61abe19f6.svg#icon-spotify" xlink:href="/assets/spotify-e5b8d68b83f4ca44a4a6dfbe2240ea050cb4d2fd38c1628be02cf2f61abe19f6.svg#icon-spotify"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:hi@ngoc.io" title="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-email">
+  <use href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email" xlink:href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-rss">
+  <use href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss" xlink:href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+  </ul>
+</nav>
+
+
+
+        <article class="article scrollappear">
+          <header class="article-header">
+            <h1>Problems and Solutions for installing Windows with OpenCore Legacy Patcher</h1>
+            <p>Just my experience trying to install Boot Camp on a Legacy Mac.</p>
+            <div class="article-list-footer">
+  <span class="article-list-date">
+    August 21, 2023
+  </span>
+  <span class="article-list-divider">-</span>
+  <span class="article-list-minutes">
+    
+    
+      4 minute read
+    
+  </span>
+  <span class="article-list-divider">-</span>
+  <div class="article-list-tags">
+    
+      
+      <a href="/tag/misc" title="See all posts with tag 'Misc'">Misc</a>
+    
+  </div>
+</div>
+          </header>
+
+          <div class="article-content">
+            <p>After a day trying to install Windows on my computer, I decided to finally start my blog with a post containing two big issues I met along the way. The solutions are readily available on the internet, albeit very obscure – hence I’m writing this post, hoping to increase visibility and SEO-friendliness of these solutions.</p>
+
+<p><em>You can skip the lengthy intro section if you just want to find out what the problems were and how to fix them.</em></p>
+
+<h2 id="tldr">TL;DR:</h2>
+<ul>
+  <li>
+    <p><em>Problem 1:</em> <strong>Windows cannot be installed to this disk. The selected disk has an MBR partition table. On EFI system, Windows can only be installed to GPT disks.</strong></p>
+
+    <p>Follow this <a href="#tldr-solution">instruction</a>.</p>
+  </li>
+  <li>
+    <p><em>Problem 2:</em> <strong>Boot Camp requires that your computer is running Windows 7.</strong></p>
+
+    <p>Follow this <a href="#tldr-solution-1">instruction</a>.</p>
+  </li>
+</ul>
+
+<h2 id="intro">Intro</h2>
+
+<p>I’m currently still using my old Mac from 2012. It was top of the line back then, and future-proofing has been nice-ish to me, since I’m still using it to write this post. I’m going to get the new Air 15” soon<img class="emoji" title=":tm:" alt=":tm:" src="https://github.githubassets.com/images/icons/emoji/unicode/2122.png" height="20" width="20"> though, how soon depending on how much I want to eat noodles 3 meals a day for the next few months.</p>
+
+<p>The reason why I said “nice-<em>ish</em>” is that Apple has decided that Macs should only have a lifespan of 7 years, and thus will not provide support for newer versions of Mac. This wasn’t a problem until Slack decided to stop working with my old unsupported MacOS, forcing me to find a solution to basically hack my way into a newer version. And that’s when I found out and install <a href="https://dortania.github.io/OpenCore-Legacy-Patcher/">OpenCore Legacy Patcher</a>.</p>
+
+<p>Then, on a whim, I decided to install Windows/Bootcamp on this Mac to see how the GT 650M is handling games now (not like I have anything else to play with). Fortunately, OCLP has a guide to <a href="https://dortania.github.io/OpenCore-Legacy-Patcher/WINDOWS.html">install Windows</a>, and even one to <a href="https://dortania.github.io/OpenCore-Post-Install/multiboot/bootcamp.html">install Boot Camp</a> (note that Boot Camp specifically is the Apple support software for dual-booting Windows on a Mac). Seems simple enough, right?</p>
+
+<h2 id="problems-and-solutions">Problems and Solutions</h2>
+
+<p>It was smooth sailing for the most part, but I encountered two problems, one while installing Windows, and one while I’m installing Boot Camp and the accompanied drivers. The specific error message is provided in the <a href="#tldr">TL;DR</a> section for ease of Googling.</p>
+
+<h3 id="windows-not-recognizing-gpt-partition-style">Windows not recognizing GPT partition style</h3>
+
+<p>Browsing through the guides and Google answers is like following a rabbit hole. I went into Disk Utility on Mac to see if it’s partitioned as GPT, and it was. Googling to see if it’s an APFS problem, no dice either. After a lot of even more hopeless Googling, I came into this lifesaving <a href="https://gist.github.com/oznu/8796d08d73315483c3b26e79a8e3d350">gist</a>. Essentially, the mistake I made was that I ran the Boot Camp Assistant (tried that before going to the official OCLP guide). Quoting the important bits:</p>
+
+<blockquote>
+  <p>OSX tried to be helpful by converting our legal GPT disk partition into a hybrid MBR partition, which makes OSX see the disk as GPT and Windows it as MBR. Windows 10 requires a GPT disk when using EFI boot, so we need to revert this change using a tool called GPT fdisk (gdisk).</p>
+</blockquote>
+
+<h4 id="tldr-solution">TL;DR solution</h4>
+<ol>
+  <li>Download and install <a href="https://sourceforge.net/projects/gptfdisk/">GPT fdisk</a>.</li>
+  <li>Find the device number for the internal hard disk (it’s probably <code class="highlighter-rouge">disk0</code>).</li>
+  <li>Run <code class="highlighter-rouge">sudo gdisk /dev/disk0</code> in the terminal, replace <code class="highlighter-rouge">disk0</code> accordingly if needed.</li>
+  <li>Type <code class="highlighter-rouge">p</code> to view the partition table to verify you’re working on the correct disk. If not, type <code class="highlighter-rouge">q</code> to quit without saving your changes and double check the device number.</li>
+  <li>Type <code class="highlighter-rouge">x</code> to enter the experts’ menu.</li>
+  <li>Type <code class="highlighter-rouge">n</code> to create a fresh protective MBR. Note that gdisk won’t confirm a change; it’ll just show you a new experts’ prompt.</li>
+  <li>Type <code class="highlighter-rouge">w</code> to save your changes. You’ll be asked to confirm this action. Do so.</li>
+</ol>
+
+<h3 id="boot-camp-requires-windows-7">Boot Camp requires Windows 7</h3>
+<p>Everything works… until you cannot install Boot Camp. Tried Windows 7 compatibility, no dice. It’s kind of obvious that it’s a problem with the downloaded Boot Camp, but there’s no newest version provided on the <a href="https://support.apple.com/downloads/bootcamp">official website</a> (6.0.6136 for my model, 6.1.x for newer models, and I really doubt Apple would update either the software or the download site).</p>
+
+<p>Turns out Brigadier is rather outdated and just will not pull the newest (or compatible?) version. The solution is much simpler than the previous one, yet a lot more restrictive: <a href="https://discussions.apple.com/thread/7189652">just go into the Boot Camp Assistant to download the updated software</a>. I wasn’t able to successfully run all of the packaged executables, but most is actually good enough. Might be relevant, but I actually ran some of the outdated software from Brigadier before I found the official one, so that might have helped.</p>
+
+<p>Another solution on that link tells you to get the Apple Boot Camp update from the internet and install it (this <a href="https://digiex.net/threads/apple-windows-10-bootcamp-6-drivers-download-applebcupdate-exe-april-1st-2016.14828/">link</a> seems to agree). I have not tried that (and I don’t intend to), but if you don’t have a Mac installation that might provide some hope. You can get internet working on your Windows installation by using the drivers included in the Brigadier version.</p>
+
+<p>For completeness’ sake, there’s also a full list of mirrors for Boot Camp <a href="https://www.applex.net/pages/bootcamp/">here</a>. However, I <strong>strongly</strong> recommend <strong>against</strong> downloading and running potentially compromised software downloaded from untrusted sources, especially with escalated privilege.</p>
+
+<h4 id="tldr-solution-1">TL;DR solution</h4>
+<ol>
+  <li>Open Boot Camp Assistant.</li>
+  <li>Go to <strong>Action</strong> &gt; <strong>Download Windows Support Software</strong>.</li>
+  <li>Copy the downloaded software to some USB and install them individually on Windows.</li>
+</ol>
+
+<h2 id="outro">Outro</h2>
+<p>Well, my Windows installation works now <img class="emoji" title=":shrug:" alt=":shrug:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f937.png" height="20" width="20"> Games run slow to a crawl with really low frame rate and jagged graphics and screaming fans, all that good stuff. I immediately went back to using Mac, and eventually wrote this guide.</p>
+
+<p>Here’s to another newly-created rarely-updated blog!</p>
+
+          </div>
+          <div class="article-share">
+            <a href="/posts/monte-carlo" title="How [not] to run a Monte Carlo simulation">
+              <svg viewbox="-100 -100 712 712"><path d="M198,256L391.6,62.4c14.3-14.3,14.3-37.4,0-51.7c-14.3-14.3-37.5-14.3-51.7,0L120.4,230.1c-6.8,6.8-10.7,16.2-10.7,25.9c0,9.6,3.9,19.1,10.7,25.9l219.4,219.4c14.3,14.3,37.4,14.3,51.7,0c14.3-14.3,14.3-37.4,0-51.7L198,256z"></path></svg>
+            </a>
+
+            
+            
+            <a class="share" href="https://twitter.com/intent/tweet?text=Problems+and+Solutions+for+installing+Windows+with+OpenCore+Legacy+Patcher%20-%20https://blog.ngoc.io/posts/oclp-bootcamp" title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+              <svg viewbox="0 0 512 512"><path d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z"></path></svg>
+            </a>
+            <a class="share" href="https://www.facebook.com/sharer/sharer.php?u=https://blog.ngoc.io/posts/oclp-bootcamp" title="Share on Facebook" rel="noreferrer noopener" target="_blank">
+              <svg viewbox="0 0 512 512"><path d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z"></path></svg>
+            </a>
+
+            <a class="disabled" href="" title="">
+              <svg viewbox="-100 -100 712 712"><path d="M391.5,230.1L172.1,10.7c-14.3-14.3-37.4-14.3-51.7,0c-14.3,14.3-14.3,37.4,0,51.7L314,256L120.4,449.6c-14.3,14.3-14.3,37.4,0,51.7c14.3,14.3,37.4,14.3,51.7,0l219.4-219.4c6.8-6.8,10.7-16.2,10.7-25.9C402.2,246.4,398.3,236.9,391.5,230.1z"></path></svg>
+            </a>
+          </div>
+
+          <!--  -->
+            
+          <div class="article-comments"></div>
+          <script src="https://giscus.app/client.js" data-repo="ngoctnq/blog" data-repo-id="R_kgDOKJ4d2g" data-category="Announcements" data-category-id="DIC_kwDOKJ4d2s4CYyNy" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-theme="noborder_light" data-input-position="top" data-lang="en" data-loading="lazy" crossorigin="anonymous" async>
+          </script>
+          <noscript>Please enable JavaScript to view the comments.</noscript>
+
+        </article>
+        <footer class="footer scrollappear">
+  <p>
+    just. keep. swimming.
+  </p>
+</footer>
+      </div>
+    </div>
+  </main>
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NG7N647RWK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NG7N647RWK');
+  </script>
+
+
+<script src="/assets/vendor-3ee2c63bbac916f96cd7f90e83ab767f058ead1301444c9966f5156911c8be7f.js" type="text/javascript"></script>
+
+
+  <script src="/assets/webfonts-96493456d319d1bf419afdf8701552d4d486fee6afd304897d4fd81eb4e0cc0b.js" type="text/javascript"></script>
+
+
+
+  <script src="/assets/scrollappear-e2da8ea567e418637e31266cc5302126eaa79f62a2273739086358b589a89ee6.js" type="text/javascript"></script>
+
+
+<script src="/assets/application-e583c14ca11e95e79eee79fe68a7ba5f766b85e70bb478cb16bf929ebab16545.js" type="text/javascript"></script>
+
+
+</body>
+</html>
