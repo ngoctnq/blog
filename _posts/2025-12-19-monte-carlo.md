@@ -6,15 +6,11 @@ thumb_image:
 tags: [math]
 ---
 
-_This is part 1 of the pokerqt series, where I do poker-related things because I like a girl who do._
+_This is part 1 of the pokeqt series, where I do poker-related things because I liked a girl who do._
 {: style="margin-bottom: 0.5em !important; font-size: .9em" }
 1. _How [not] to run a Monte Carlo simulation_
-2. [Control Variates and the Satisfying Telescoping Sum]({% post_url 2025-12-25-control-variate %})
-{% if draft %}
-3. [Stacking chips and CUDA cores]({% post_url 2026-01-01-stacking-chips %})
-{% else %}
-_And 1 more in the works!_
-{% endif %}
+2. [Control Variates and the Satisfying Telescoping Sum]({{ page.next.url }})
+3. [Stacking chips and CUDA cores]({{ page.next.next.url }})
 {: style="font-size: .95em; opacity: 0.9" }
 
 ---
@@ -206,10 +202,10 @@ $$
 
 We can see that in this example, the proposed algorithm is actually biased against games with the same card number! In short, just don't use it.
 
-### Honorable mention: (Multi-level) Control Variates
-Out of all the mentioned approaches that I glossed over above, there is a method that helps with high variance that is both very simple, and incur minimal overhead! That is, Control Variates.
+### Pure magic: (Multi-level) Control Variates
+Actually, I kinda lied: out of all the mentioned approaches that I glossed over above, there is a method that helps with high variance that is very simple, works incredibly well, incur minimal overhead, and can be used purely as post-processing (i.e. does not alter the sampling process). That is, Control Variates and its extensions.
 
-[But that is for another day.]({% post_url 2025-12-25-control-variate %})
+[But that is for another day.]({{ page.next.url }})
 
 ## Appendix: How to calculate Equity
 To my understanding, Equity is almost like EV, where it measures the portion of the pot that belongs to you given your hand, depending on how the game turn out (i.e. what cards are drawn). This is obviously proportional to the pot, so taking it outside as a common factor we have:
